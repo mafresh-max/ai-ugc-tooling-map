@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AI UGC-Video Tooling Map</title>
+<style>
+:root{
+  --bg:#0e1117; --panel:#161b24; --panel2:#1c2230; --line:#262d3a;
+  --fg:#e6e9ef; --mut:#9aa4b5; --dim:#6b7486;
+  --ok:#2ecc9b; --new:#ffcb6b; --warn:#e0a000; --bad:#ff6b6b; --acc:#7c9cff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 22px 60px}
+header h1{margin:0 0 4px;font-size:26px;letter-spacing:-.3px}
+.sub{color:var(--mut);font-size:13.5px;margin-bottom:20px}
+.stat-row{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0 24px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;min-width:120px}
+.stat .n{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.stat .l{color:var(--mut);font-size:12px;margin-top:5px}
+.stat.hl .n{color:var(--acc)}
+.insights{background:linear-gradient(180deg,#191f2b,#151a23);border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:12px;padding:16px 20px;margin-bottom:28px}
+.insights h2{font-size:14px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin:0 0 10px}
+.insights ul{margin:0;padding-left:18px} .insights li{margin:6px 0}
+.insights b{color:#fff}
+h2.sec{font-size:17px;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h2.sec .hint{font-weight:400;font-size:13px;color:var(--mut);text-transform:none;letter-spacing:0}
+/* progressive disclosure */
+details.pd{border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:10px;background:var(--panel);margin:12px 0}
+details.pd>summary{cursor:pointer;padding:13px 16px;font-size:14px;font-weight:600;color:var(--fg);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+details.pd>summary::-webkit-details-marker{display:none}
+details.pd>summary .exp{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent);border:1px solid color-mix(in srgb,var(--acc) 42%,transparent);border-radius:7px;padding:5px 11px;white-space:nowrap;flex:none}
+details.pd>summary .exp::after{content:"▾";font-size:9px}
+details.pd[open]>summary .exp::after{content:"▴"}
+details.pd[open]>summary .exp .lbl::before{content:"Hide"}
+details.pd>summary .exp .lbl::before{content:"Show"}
+details.pd>summary:hover .exp{background:color-mix(in srgb,var(--acc) 24%,transparent);color:#fff}
+summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:4px}
+.pd-body{padding:4px 16px 16px}
+.dd-lead{font-size:13px;color:#c5cdda;line-height:1.6;margin-bottom:12px}
+.dd-lead b{color:var(--fg)}
+/* stack rationale */
+.wrow{display:flex;gap:11px;padding:9px 0;border-top:1px solid var(--line)}
+.wrow:first-child{border-top:none}
+.wdot{width:11px;height:11px;border-radius:50%;flex:0 0 auto;margin-top:4px;box-shadow:0 0 0 3px var(--panel)}
+.wname{font-weight:700;font-size:13.5px}
+.wcoord{font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums}
+.wtext{font-size:13px;color:var(--mut);line-height:1.55;margin-top:2px}
+/* matrix */
+.matrix-wrap{margin-bottom:14px}
+.plot-outer{position:relative;padding:8px 4px 46px 48px}
+.plot{position:relative;height:520px;background:radial-gradient(circle at 50% 50%,#1a2130,#12161f);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.plot .mid-v{position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed #33405420}
+.plot .mid-h{position:absolute;top:50%;left:0;right:0;border-top:1px dashed #33405420}
+.ql{position:absolute;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.55;max-width:44%}
+.ql.tl{top:9px;left:11px;color:var(--ok)} .ql.tr{top:9px;right:11px;color:var(--acc);text-align:right}
+.ql.bl{bottom:9px;left:11px;color:var(--bad)} .ql.br{bottom:9px;right:11px;color:var(--mut);text-align:right}
+.axis-y{position:absolute;left:28px;top:6px;bottom:46px;width:2px;background:var(--dim)}
+.axis-y::after{content:"";position:absolute;top:-8px;left:-4px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid var(--dim)}
+.axis-y-lbl{position:absolute;left:6px;top:calc((100% - 46px)/2 + 6px);transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.09em}
+.axis-x{position:absolute;left:48px;right:8px;bottom:26px;height:2px;background:var(--dim)}
+.axis-x::after{content:"";position:absolute;right:-8px;top:-4px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid var(--dim)}
+.axis-x-lbl{position:absolute;left:calc(48px + (100% - 56px)/2);bottom:7px;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.09em}
+.pt{position:absolute;transform:translate(-50%,50%);display:flex;align-items:center;gap:7px;z-index:2;text-decoration:none;cursor:pointer}
+.pt.lft{flex-direction:row-reverse}
+.pt .d{width:13px;height:13px;border-radius:50%;flex:0 0 auto;background:var(--d);box-shadow:0 0 0 3px #12161f,0 0 10px 1px var(--d);transition:transform .12s ease,box-shadow .12s ease}
+.pt .pl{display:flex;flex-direction:column;line-height:1.15}
+.pt.lft .pl{text-align:right}
+.pt .pl b{font-size:11.5px;color:var(--fg);white-space:nowrap;transition:color .12s ease}
+.pt .pp{font-size:10px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pt:hover{z-index:6}
+.pt:hover .d{transform:scale(1.4);box-shadow:0 0 0 3px #12161f,0 0 20px 5px var(--d)}
+.pt:hover .pl b{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.pt:hover .pl .pp{filter:brightness(1.3)}
+.pt:focus-visible{outline:2px solid var(--acc);outline-offset:4px;border-radius:6px}
+tbody tr:target{background:color-mix(in srgb,var(--acc) 15%,transparent)}
+tbody tr:target th.tname{box-shadow:inset 3px 0 0 var(--acc)}
+.guide-box{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-top:16px}
+@media(max-width:720px){.guide-box{grid-template-columns:1fr}}
+.grow{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--g);border-radius:10px;padding:11px 14px}
+.gq{font-size:13px;color:var(--mut);margin-bottom:4px}
+.ga{font-size:13.5px;color:var(--fg)} .ga b{color:#fff}
+.why{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 20px;margin:6px 0 12px;font-size:13.5px;color:var(--mut)}
+.why b{color:var(--fg)}
+.pbrow{display:flex;gap:13px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.pbnum{width:26px;height:26px;flex:none;display:grid;place-items:center;background:var(--acc);color:#0e1117;border-radius:8px;font-weight:700;font-size:14px}
+.pbmain{flex:1;min-width:0}
+.pbtitle{font-weight:600;font-size:14.5px;margin-bottom:4px}
+.pbshort{font-size:13px;color:var(--mut);line-height:1.55}
+details.pbd{margin-top:9px}
+details.pbd>summary{cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--ok);background:color-mix(in srgb,var(--ok) 13%,transparent);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);border-radius:7px;padding:5px 11px;list-style:none}
+details.pbd>summary::-webkit-details-marker{display:none}
+details.pbd>summary .lbl::before{content:"⚡ How to — the simple version"}
+details.pbd>summary::after{content:"▾";font-size:9px}
+details.pbd[open]>summary::after{content:"▴"}
+details.pbd>summary:hover{background:color-mix(in srgb,var(--ok) 22%,transparent);color:#fff}
+.pbd-body{margin-top:9px;font-size:12.5px;color:#aeb6c6;line-height:1.55}
+.legend2{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:var(--mut)}
+.legend2 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+/* table */
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+thead th{position:sticky;top:0;background:var(--panel2);text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);padding:11px 14px;border-bottom:1px solid var(--line)}
+thead th:nth-child(4){text-align:right}
+tbody td, tbody th{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;font-weight:400}
+tbody tr:last-child td, tbody tr:last-child th{border-bottom:none}
+tbody tr:hover{background:#1a212d}
+.tname{font-weight:600;white-space:nowrap;color:var(--fg)}
+.was{color:var(--mut);font-size:13.5px}
+.tdetail{margin-top:7px}
+.tdetail>summary, .bk-full>summary{cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--acc);background:color-mix(in srgb,var(--acc) 13%,transparent);border:1px solid color-mix(in srgb,var(--acc) 38%,transparent);border-radius:7px;padding:5px 11px;list-style:none;line-height:1.1}
+.tdetail>summary::-webkit-details-marker, .bk-full>summary::-webkit-details-marker{display:none}
+.tdetail>summary::after, .bk-full>summary::after{content:"▾";font-size:9px;opacity:.85}
+.tdetail[open]>summary::after, .bk-full[open]>summary::after{content:"▴"}
+.tdetail>summary:hover, .bk-full>summary:hover{background:color-mix(in srgb,var(--acc) 24%,transparent);color:#fff}
+.tdetail>span{display:block;margin-top:8px;font-size:12.5px;color:#aeb6c6;line-height:1.5;max-width:52ch}
+.price{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:#cdd4e0;font-size:13px}
+.fit{font-size:11.5px;color:#c5cdda;line-height:1.4;min-width:140px;max-width:180px}
+.fit .vb{margin-bottom:4px}
+.fit-t{display:block}
+.cat{font-size:11.5px;padding:2px 9px;border-radius:20px;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 40%,transparent);white-space:nowrap}
+.badge{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:20px;background:color-mix(in srgb,var(--b) 16%,transparent);color:var(--b);border:1px solid color-mix(in srgb,var(--b) 45%,transparent)}
+.cluster{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+.cl-head{display:flex;align-items:center;gap:11px}
+.cl-num{width:26px;height:26px;flex:none;display:grid;place-items:center;background:var(--acc);color:#0e1117;border-radius:8px;font-weight:700;font-size:14px}
+.cl-head h3{margin:0;font-size:16.5px}
+.cl-desc{color:var(--mut);font-size:13.5px;margin:9px 0 12px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.chip{font-size:12px;padding:3px 10px;border-radius:7px;background:#222a38;border:1px solid var(--line);color:#c8d0de}
+.bks{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.bk{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.bk-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px}
+.bk-h a{color:var(--acc);text-decoration:none;font-weight:600;font-size:13.5px}
+.bk-h a:hover{text-decoration:underline}
+.meta{color:var(--dim);font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bk-t{color:#bcc4d2;font-size:12.5px;line-height:1.45}
+.inspo-note{color:var(--fg);font-size:13px;line-height:1.5;margin-bottom:6px;font-weight:500}
+.bk-full{margin-top:8px}
+.bk-full>div{margin-top:8px;font-size:12px;color:#aeb6c6;line-height:1.5;white-space:pre-wrap}
+details.verdict{margin-top:8px}
+details.verdict>summary{cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--new);background:color-mix(in srgb,var(--new) 13%,transparent);border:1px solid color-mix(in srgb,var(--new) 42%,transparent);border-radius:7px;padding:5px 11px;list-style:none}
+details.verdict>summary::-webkit-details-marker{display:none}
+details.verdict>summary .lbl::before{content:"🔍 Reality check"}
+details.verdict>summary::after{content:"▾";font-size:9px}
+details.verdict[open]>summary::after{content:"▴"}
+details.verdict>summary:hover{background:color-mix(in srgb,var(--new) 22%,transparent)}
+.v-body{margin-top:9px;display:flex;flex-direction:column;gap:8px}
+.v-row{display:grid;grid-template-columns:46px 1fr;gap:9px;font-size:12px;line-height:1.5;align-items:start}
+.v-k{color:var(--dim);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.04em;padding-top:3px}
+.v-t{color:#aeb6c6}
+.vb{display:inline-block;font-size:10px;font-weight:700;color:var(--vc);border:1px solid color-mix(in srgb,var(--vc) 45%,transparent);background:color-mix(in srgb,var(--vc) 15%,transparent);border-radius:5px;padding:1px 6px;margin-right:6px;white-space:nowrap}
+.mytake{margin-top:10px;font-size:12.5px;color:#cdd4e0;line-height:1.55;display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 4px}
+.mytake .take-t{flex:1 1 200px}
+.mytake .vb{margin-right:2px}
+.callout{background:linear-gradient(180deg,#1e2130,#16181f);border:1px solid var(--line);border-left:3px solid var(--new);border-radius:12px;padding:14px 20px;margin:-6px 0 16px}
+.callout .ot{font-size:13.5px;color:var(--mut);line-height:1.6}
+.callout b{color:var(--new)} .callout strong{color:var(--fg)}
+.inspo{background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:8px 22px}
+.inspo li{margin:8px 0;color:var(--mut);font-size:13.5px}
+.inspo a{color:var(--acc);text-decoration:none} .inspo a:hover{text-decoration:underline}
+footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.legend span{font-size:11.5px;color:var(--mut)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+</style></head>
+<body><main class="wrap">
+<header>
+  <h1>🎬 AI UGC-Video Tooling Map</h1>
+  <div class="sub">Curated tooling & tactics for AI-generated UGC / creator video · Updated 01 Jul 2026 12:21 · tool status verified via WebSearch</div>
+</header>
+
+<div class="stat-row">
+  <div class="stat"><div class="n">163</div><div class="l">sources scanned</div></div>
+  <div class="stat hl"><div class="n">15</div><div class="l">core UGC-video hits</div></div>
+  <div class="stat hl"><div class="n">19</div><div class="l">tools verified</div></div>
+  <div class="stat"><div class="n">8</div><div class="l">use-case clusters</div></div>
+</div>
+
+<div class="insights">
+  <h2>The patterns</h2>
+  <ul>
+    <li><b>The stack has decoupled:</b> platforms (MakeUGC, Linah) bundle the same 5–6 engines (Veo 3.1, Sora 2, Kling, Seedance, Nano Banana). You choose <b>convenience vs. control</b> — not the model (see matrix below).</li>
+    <li><b>One workflow dominates:</b> <b>1 product photo → consistent AI persona → dozens of UGC clips</b>, orchestrated in n8n. Appears 4× independently.</li>
+    <li><b>Competitor teardown is the lever:</b> scrape the FB Ad Library → AI analyses the hooks → fresh variants. Creative <i>intelligence</i> beats raw generation.</li>
+    <li><b>Costs have collapsed:</b> talking-head &lt; $1, video teardown ~$0.27, faceless vlog stack &lt; $50/mo. The bottleneck is hook/script, not production.</li>
+    <li><b>For an e-commerce / DTC brand:</b> a managed platform (MakeUGC/Linah) is the fastest path to test; a self-hosted ComfyUI-MCP stack (Nano Banana Pro + Seedance) is the max-control route.</li>
+  </ul>
+</div>
+
+<h2 class="sec">🧭 Stack choice: Convenience × Control <span class="hint">— where each path sits, and what it costs you</span></h2>
+<div class="matrix-wrap">
+  <div class="plot-outer">
+    <div class="axis-y"></div><span class="axis-y-lbl">CONVENIENCE / turnkey</span>
+    <div class="axis-x"></div><span class="axis-x-lbl">CONTROL over output</span>
+    <div class="plot">
+      <div class="mid-v"></div><div class="mid-h"></div>
+      <span class="ql tl">Turnkey · AI does it all</span>
+      <span class="ql tr">Holy grail<br>(still rare)</span>
+      <span class="ql bl">avoid</span>
+      <span class="ql br">Tinker-machine</span>
+      <a class="pt rgt" href="#t-fastlane-claude-for-content" style="left:21%;bottom:88%" title="Paste a URL → published videos. Zero fiddling, AI as a content team. — click for the table entry">
+      <span class="d" style="--d:var(--new)"></span>
+      <span class="pl"><b>Fastlane<br>(Agentic E2E)</b><span class="pp" style="color:var(--new)">SaaS ~mid</span></span>
+    </a><a class="pt rgt" href="#t-makeugc" style="left:46%;bottom:78%" title="Platform quick-start, 6 models under one login, 500+ creators. — click for the table entry">
+      <span class="d" style="--d:var(--new)"></span>
+      <span class="pl"><b>MakeUGC</b><span class="pp" style="color:var(--new)">$49–119/mo</span></span>
+    </a><a class="pt lft" href="#t-linah-ai" style="left:35%;bottom:71%" title="Avatar-UGC + photo→video + FB-Ads integration. — click for the table entry">
+      <span class="d" style="--d:var(--new)"></span>
+      <span class="pl"><b>Linah AI</b><span class="pp" style="color:var(--new)">paid (VIRAL30)</span></span>
+    </a><a class="pt rgt" href="#t-heygen" style="left:56%;bottom:77%" title="Avatar / talking-head platform — fast testimonial-style UGC. — click for the table entry">
+      <span class="d" style="--d:var(--new)"></span>
+      <span class="pl"><b>HeyGen</b><span class="pp" style="color:var(--new)">~$24/mo</span></span>
+    </a><a class="pt lft" href="#t-claude-code-gemini-skill" style="left:88%;bottom:71%" title="The analysis tool, not a generator — competitor-ad teardown. — click for the table entry">
+      <span class="d" style="--d:var(--ok)"></span>
+      <span class="pl"><b>Gemini teardown<br>(intel)</b><span class="pp" style="color:var(--ok)">~$0.27/video</span></span>
+    </a><a class="pt rgt" href="#tools" style="left:74%;bottom:60%" title="Describe the pipeline in language → agent builds it. Your tool. — click for the table entry">
+      <span class="d" style="--d:var(--ok)"></span>
+      <span class="pl"><b>Claude Code / Codex<br>+ APIs</b><span class="pp" style="color:var(--ok)">API cost</span></span>
+    </a><a class="pt lft" href="#t-kie-ai" style="left:64%;bottom:51%" title="One cheap API key for Veo, Sora, Kling, Seedance… — click for the table entry">
+      <span class="d" style="--d:var(--ok)"></span>
+      <span class="pl"><b>kie.ai<br>(engine API)</b><span class="pp" style="color:var(--ok)">30–70% cheaper</span></span>
+    </a><a class="pt rgt" href="#t-veo-3-1" style="left:52%;bottom:45%" title="The models themselves, called raw via API. — click for the table entry">
+      <span class="d" style="--d:var(--ok)"></span>
+      <span class="pl"><b>Raw engines<br>(Veo/Kling/…)</b><span class="pp" style="color:var(--ok)">per-second API</span></span>
+    </a><a class="pt lft" href="#tools" style="left:42%;bottom:38%" title="Own flow: scrape → generate → test. Full logic control, visual nodes. — click for the table entry">
+      <span class="d" style="--d:var(--ok)"></span>
+      <span class="pl"><b>n8n-Pipeline</b><span class="pp" style="color:var(--ok)">API cost</span></span>
+    </a><a class="pt lft" href="#t-comfyui-cloud-mcp" style="left:82%;bottom:29%" title="Agent drives ComfyUI, every node tunable. The reference-stack plan. — click for the table entry">
+      <span class="d" style="--d:var(--bad)"></span>
+      <span class="pl"><b>ComfyUI Cloud</b><span class="pp" style="color:var(--bad)">~$15/run</span></span>
+    </a><a class="pt lft" href="#t-comfyui-cloud-mcp" style="left:92%;bottom:14%" title="Full data sovereignty, no subscription. The tinkerer&#x27;s maximal path. — click for the table entry">
+      <span class="d" style="--d:var(--ok)"></span>
+      <span class="pl"><b>ComfyUI local</b><span class="pp" style="color:var(--ok)">GPU invest</span></span>
+    </a>
+    </div>
+  </div>
+  <div class="legend2">
+    <span><span class="dot" style="background:var(--ok)"></span>cheap / recurring</span>
+    <span><span class="dot" style="background:var(--new)"></span>mid subscription</span>
+    <span><span class="dot" style="background:var(--bad)"></span>expensive per run</span>
+  </div>
+  <div class="guide-box"><div class="grow" style="--g:var(--ok)">
+      <div class="gq">Just testing whether AI-UGC works at all?</div><div class="ga"><b>Platform</b> (MakeUGC / Linah). 1 day, ~$49, zero setup. An MVP test — cancel with no sunk cost.</div></div><div class="grow" style="--g:var(--acc)">
+      <div class="gq">Volume + distribution on autopilot, minimal time?</div><div class="ga"><b>Agentic E2E</b> (Fastlane). Turnkey — AI handles creation <i>and</i> publishing. Highest convenience premium.</div></div><div class="grow" style="--g:var(--acc)">
+      <div class="gq">Full brand control + own logic, mid-term?</div><div class="ga"><b>n8n pipeline</b> (visual nodes) or <b>Claude Code / Codex + APIs</b> (describe the pipeline in language — your tool). Setup once, every step controllable, cheap to run.</div></div><div class="grow" style="--g:var(--new)">
+      <div class="gq">Max control + data sovereignty, technically deep?</div><div class="ga"><b>ComfyUI + MCP (local GPU)</b>. Powerful, but overkill for a first test.</div></div></div>
+</div>
+<div class="why">
+  <b>Why pay for convenience at all?</b> The dots sit almost on a diagonal — more convenience almost always means less control. The premium toward top-left is the <b>convenience premium</b>: you buy model choice, prompting, stitching and publishing as done-for-you. It pays off <b>when your time is worth more than the premium</b> — the $49–119/mo is rarely the real constraint. Control (right) only pays off once brand-fit or unit economics at high volume become the bottleneck. <b>Recommended: start top-left (a platform test), move right as it proves out</b> — full ComfyUI build only when volume + data sovereignty genuinely demand it.
+</div>
+<details class="pd">
+  <summary><span>Why each stack sits where it does — positioning rationale</span> <span class="exp"><span class="lbl"></span></span></summary>
+  <div class="pd-body"><div class="wrow">
+      <span class="wdot" style="background:var(--new)"></span>
+      <div><span class="wname">Fastlane (Agentic E2E)</span> <span class="wcoord">control 21% · convenience 88%</span><div class="wtext">Top-left corner. Convenience is maxed — paste a URL and get finished, published videos; you touch nothing. Control is minimal — the AI picks scenes, hooks, pacing and format; you approve, you don&#x27;t direct. It removes every production step, and with it every creative lever. The bet: your time is worth more than the lost control.</div></div>
+    </div><div class="wrow">
+      <span class="wdot" style="background:var(--new)"></span>
+      <div><span class="wname">MakeUGC</span> <span class="wcoord">control 46% · convenience 78%</span><div class="wtext">High convenience, medium control. You pick from 6 video engines, 500+ AI creators, script and avatar — far more levers than Fastlane, but still a managed black box you can&#x27;t open. The $49–119/mo subscription buys the whole pipeline under one login. The natural place to start a test.</div></div>
+    </div><div class="wrow">
+      <span class="wdot" style="background:var(--new)"></span>
+      <div><span class="wname">Linah AI</span> <span class="wcoord">control 35% · convenience 71%</span><div class="wtext">Sits almost on top of MakeUGC — slightly less control (fewer model choices), tuned specifically for avatar-UGC and Facebook-Ads output. One photo in, finished video ad out. Same convenience-vs-control trade as any managed platform.</div></div>
+    </div><div class="wrow">
+      <span class="wdot" style="background:var(--new)"></span>
+      <div><span class="wname">HeyGen</span> <span class="wcoord">control 56% · convenience 77%</span><div class="wtext">A high-convenience avatar / talking-head platform. For a physical-product brand it&#x27;s the fast route to testimonial-style UGC (&#x27;I tested these&#x27;) without booking a real reviewer. Slightly more control than pure UGC platforms because you direct the avatar and script — still a managed box. Its engine is open-sourced as HyperFrames if you ever want the self-host version.</div></div>
+    </div><div class="wrow">
+      <span class="wdot" style="background:var(--ok)"></span>
+      <div><span class="wname">Gemini teardown (intel)</span> <span class="wcoord">control 88% · convenience 71%</span><div class="wtext">Not a generator — the intelligence tool, and the answer to &#x27;why isn&#x27;t it on the matrix?&#x27;: it earns its own dot. Drop competitor ads in, get a structured teardown (hook, angle, on-screen text verbatim). High control over what you analyse and fairly turnkey (a focused skill). This is the INPUT to the teardown playbook above — you analyse before you generate. ~$0.27 per video vs a $200/mo ad-intel platform.</div></div>
+    </div><div class="wrow">
+      <span class="wdot" style="background:var(--ok)"></span>
+      <div><span class="wname">Claude Code / Codex + APIs</span> <span class="wcoord">control 74% · convenience 60%</span><div class="wtext">Right side, mid-height. You describe the pipeline in plain language and the agent builds it — more convenient than wiring nodes by hand, yet high control because you own every step and every API key. This is the pattern from the most-bookmarked author (builds teardown, static-ad and automation tools directly in Claude Code) and it&#x27;s the same tool you already use daily.</div></div>
+    </div><div class="wrow">
+      <span class="wdot" style="background:var(--ok)"></span>
+      <div><span class="wname">kie.ai (engine API)</span> <span class="wcoord">control 64% · convenience 51%</span><div class="wtext">Not a stack — the cheap API layer UNDER the control-side routes. One key for Veo, Sora, Kling, Seedance and more at roughly 30–70% below official pricing (Sora 2 from $0.015/s, Veo 3 up to 70% cheaper). If you go the Claude Code / n8n / ComfyUI route, this is how you buy the engines without rebuilding your backend per model. Green because it&#x27;s the cost-saver, not a workflow itself.</div></div>
+    </div><div class="wrow">
+      <span class="wdot" style="background:var(--ok)"></span>
+      <div><span class="wname">Raw engines (Veo/Kling/…)</span> <span class="wcoord">control 52% · convenience 45%</span><div class="wtext">The models themselves — Veo 3.1, Kling 2.6, Seedance, Nano Banana — called raw via API. Mid on both axes: prompt-level control, but you assemble the whole workflow. Kling is strong on product shots (relevant for a physical product); Nano Banana locks a consistent on-screen persona across clips. Buy them cheapest through an aggregator like kie.ai.</div></div>
+    </div><div class="wrow">
+      <span class="wdot" style="background:var(--ok)"></span>
+      <div><span class="wname">n8n-Pipeline</span> <span class="wcoord">control 42% · convenience 38%</span><div class="wtext">Center-left. A visual node graph: scrape → generate → test. Full control over the logic, but you wire it and maintain it yourself. Appears in 4+ bookmarked workflows (FB-Ad-Library → Veo 3, product-photo → dozens of UGC clips). Runs cheap — only the underlying API calls cost money. (Whether you even need it: see the note in the clusters below.)</div></div>
+    </div><div class="wrow">
+      <span class="wdot" style="background:var(--bad)"></span>
+      <div><span class="wname">ComfyUI Cloud</span> <span class="wcoord">control 82% · convenience 29%</span><div class="wtext">Bottom-right. An agent drives ComfyUI and every node is tunable — near-maximum control over the output. The catch: cloud runs cost about $15 each (images + a few clips), which is why it&#x27;s the red, expensive-per-run dot. Powerful, but pricey at volume.</div></div>
+    </div><div class="wrow">
+      <span class="wdot" style="background:var(--ok)"></span>
+      <div><span class="wname">ComfyUI local</span> <span class="wcoord">control 92% · convenience 14%</span><div class="wtext">Far bottom-right. Maximum control and full data sovereignty, no subscription at all. The cost moves from per-run fees to a one-time GPU investment plus setup and maintenance — the tinkerer&#x27;s maximal path. Cheapest to run once it&#x27;s standing, most expensive in your time to get there.</div></div>
+    </div></div>
+</details>
+<details class="pd" style="border-left-color:var(--ok)">
+  <summary><span>🔍 That top-right dot — deep-dive on the teardown skill</span> <span class="exp"><span class="lbl"></span></span></summary>
+  <div class="pd-body">
+    <div class="dd-lead">You spotted it: it sits top-right — high control <b>and</b> fairly turnkey, a rare and genuinely high-leverage combination. But read the axes honestly: it's the one dot here that <b>isn't a generator</b>. It doesn't make a single video — it tells you <i>what</i> to make. So it's "the best" for <b>analysis</b>, not for production, and it's strongest as the front of the workflow: analyse first, then a generator executes.</div>
+    <div class="v-row"><span class="v-k">Does</span><span class="v-t">Drop any video (a competitor ad, a TikTok, a Loom) into Claude Code → routed through Gemini's native video understanding → a structured teardown: hook (first 3 s), angle, target audience, pain point, verbatim on-screen text, beat-by-beat. Not a transcript — a real creative breakdown.</span></div>
+    <div class="v-row"><span class="v-k">Setup</span><span class="v-t">Claude Code (you already run it) plus a Gemini API key. The skill itself is the free build from the bookmark — no new platform, no subscription to add.</span></div>
+    <div class="v-row"><span class="v-k">Cost</span><span class="v-t">~$0.27 per 30-min video. Run it across 20 competitor ads for about $5 total — versus roughly $200/mo for a dedicated ad-intelligence platform.</span></div>
+    <div class="v-row"><span class="v-k">For you</span><span class="v-t">Point it at Loop / Alpine / HearProtek ads → see which angles (sleep, concerts, focus, kids) the category actually spends on → map to your products → generate. This is step 2 of the playbook below.</span></div>
+    <div class="v-row"><span class="v-k">Limit</span><span class="v-t">It's only as good as the ads you feed it and the action you take next. Analysis with no generation is just a nice report. Pair it with a generator (a platform like MakeUGC) and it becomes the sharpest part of your loop.</span></div>
+  </div>
+</details>
+<details class="pd" style="border-left-color:var(--acc)">
+  <summary><span>🎯 Why MakeUGC first — and what HeyGen &amp; the teardown tool are really for</span> <span class="exp"><span class="lbl"></span></span></summary>
+  <div class="pd-body">
+    <div class="dd-lead">Three dots cluster near the top — MakeUGC, HeyGen and the teardown tool. They look like alternatives, but only two are platforms and only one is the right first move. Here's the honest split.</div>
+    <div class="v-row"><span class="v-k">MakeUGC</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">start here</b>The broadest platform: 6 video engines, 500+ AI creators, 50+ languages under one ~$49 login. It covers every angle you'd want to test — product-in-hand, lifestyle, testimonial — in one place. The lowest-risk single test of whether AI-UGC moves the needle for a physical product.</span></div>
+    <div class="v-row"><span class="v-k">HeyGen</span><span class="v-t"><b class="vb" style="--vc:var(--new)">narrower, later</b>An avatar / talking-head specialist. Cheaper (~$24) and excellent at one format — a 'person' reviewing your product to camera. But that's the one trick; it won't do product-in-hand or lifestyle b-roll. Reach for it once testimonial-style ads have proven out, not as your first test.</span></div>
+    <div class="v-row"><span class="v-k">Teardown</span><span class="v-t"><b class="vb" style="--vc:var(--acc)">not a rival</b>The analysis tool, not a generator (see the deep-dive above). It doesn't compete with MakeUGC — it feeds it. Run both: the teardown tells you the angle, MakeUGC produces it.</span></div>
+    <div class="v-row"><span class="v-k">Bottom line</span><span class="v-t">MakeUGC first because it's the widest, cheapest single test. HeyGen when you specifically want the testimonial format. The teardown tool alongside either — always — because it's the intelligence, not the factory.</span></div>
+  </div>
+</details>
+
+<h2 class="sec">🎯 Playbook: competitor teardown <span class="hint">— reverse-engineer the ad-spend the category already validated</span></h2>
+<div class="pb"><div class="pbrow"><span class="pbnum">1</span><div class="pbmain"><div class="pbtitle">Find the competitors&#x27; live ads — free</div><div class="pbshort">Open the Meta Ad Library (public) and pull the video ads currently running for the category leaders — e.g. Loop, Alpine, HearProtek and other earplug / hearing-protection brands. Still running = still spending = still working.</div><details class="pbd"><summary><span class="lbl"></span></summary><div class="pbd-body">Keep it simple — you don&#x27;t need a scraper to start. The Ad Library UI plus a few screen-recordings covers the first pass. Automate the pull (a script or n8n) only once you&#x27;re doing this weekly — not before. A competitor-analysis workflow is likely already in place; this is the same muscle, pointed at ads instead of listings.</div></details></div></div><div class="pbrow"><span class="pbnum">2</span><div class="pbmain"><div class="pbtitle">Tear the hooks apart with AI</div><div class="pbshort">Drop each competitor video into the Claude Code + Gemini teardown skill (~$0.27 per video). It returns the hook (first 3 seconds), the angle, the pain point, on-screen text verbatim, and a beat-by-beat breakdown.</div><details class="pbd"><summary><span class="lbl"></span></summary><div class="pbd-body">Run it across 10–20 ads and the pattern emerges: which angles the category is actually winning with — not what you&#x27;d guess. This is the &#x27;creative intelligence&#x27; step: understanding WHY an ad lands before you spend a cent making your own.</div></details></div></div><div class="pbrow"><span class="pbnum">3</span><div class="pbmain"><div class="pbtitle">Map winning angles to your SKUs</div><div class="pbshort">Each angle maps to a use-case: concerts / festival hearing damage → music earplugs · can&#x27;t sleep / snoring partner → sleep earplugs · open-office noise / focus → work earplugs · kids + noise sensitivity → kids earplugs.</div><details class="pbd"><summary><span class="lbl"></span></summary><div class="pbd-body">Pick the 2–3 angles with the most ad-spend behind them (most ads, longest-running = most validated) and ignore the long tail. That&#x27;s the entire payoff of the teardown: let the category&#x27;s own spend tell you where to aim, instead of testing blindly.</div></details></div></div><div class="pbrow"><span class="pbnum">4</span><div class="pbmain"><div class="pbtitle">Generate fresh variants on your own product</div><div class="pbshort">Feed a product photo plus the winning angle into a platform (MakeUGC / Linah) or your own agentic pipeline → dozens of UGC variants per angle. Test, keep the winners, kill the rest.</div><details class="pbd"><summary><span class="lbl"></span></summary><div class="pbd-body">You&#x27;re not copying their ad — you&#x27;re reverse-engineering the ANGLE their spend already proved, then executing it on your product. Creative intelligence beats raw generation: 5 targeted variants on a validated angle beat 50 blind ones. Made-in-Germany / premium positioning is itself an angle worth testing here.</div></details></div></div></div>
+<div class="why"><b>The lever:</b> you're not guessing what works — you reverse-engineer ad-spend the category has already validated. Creative <i>intelligence</i> (knowing WHY an ad lands) beats raw generation (making more ads blindly). Open the green button on each step for the simple how-to.</div>
+
+<h2 class="sec" id="tools">🛠️ Tool landscape <span class="hint">— 19 verified · click a matrix dot to jump here, or “details” per tool</span></h2>
+<table>
+  <thead><tr><th scope="col">Tool</th><th scope="col">Category</th><th scope="col">What it does</th><th scope="col">Pricing 2026</th><th scope="col">Status</th><th scope="col">Fit for us</th></tr></thead>
+  <tbody><tr id="t-fastlane-claude-for-content">
+      <th scope="row" class="tname">Fastlane (Claude for Content)</th>
+      <td><span class="cat" style="--c:#ff9e64">Agentic E2E</span></td>
+      <td class="was">Website URL → 1000s of viral short videos + auto-publish. AI as a whole content team.<details class="tdetail"><summary>Show details</summary><span>Launched June 2026. Frames itself as &#x27;Claude for Social Media&#x27; (its own marketing, not an Anthropic product). Website becomes context, generated videos become candidate actions, the calendar + social integrations execute, analytics close the loop. Formats for TikTok / Reels / Shorts.</span></details></td>
+      <td class="price">SaaS, launched 06/2026 (pricing TBA)</td>
+      <td><span class="badge" style="--b:var(--new)">new</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--new)">some fit</b><span class="fit-t">Volume test, low brand control</span></td>
+    </tr><tr id="t-claude-code-gemini-skill">
+      <th scope="row" class="tname">Claude Code + Gemini skill</th>
+      <td><span class="cat" style="--c:#82aaff">Analysis</span></td>
+      <td class="was">Video teardown: hook / angle / on-screen-text verbatim<details class="tdetail"><summary>Show details</summary><span>Drop any video (competitor UGC ad, TikTok, Loom) into Claude Code → routed through Gemini for native video understanding → full creative teardown: hook, audience, angle, beat-by-beat, verbatim on-screen text. ~$0.27 per 30-min video vs a $200/mo ad-intel platform.</span></details></td>
+      <td class="price">~$0.27 / 30-min video</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--ok)">high fit</b><span class="fit-t">Competitor intel — high leverage</span></td>
+    </tr><tr id="t-elevenlabs">
+      <th scope="row" class="tname">ElevenLabs</th>
+      <td><span class="cat" style="--c:#f78c6c">Audio / voice</span></td>
+      <td class="was">Realistic voices / voiceover, many languages<details class="tdetail"><summary>Show details</summary><span>The voice layer in the faceless-vlog and talking-head stacks. Realistic, non-robotic voiceover; drops per-clip cost well under a dollar.</span></details></td>
+      <td class="price">from ~$5/mo</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--new)">some fit</b><span class="fit-t">Voiceover — needed for talking-head</span></td>
+    </tr><tr id="t-comfyui-cloud-mcp">
+      <th scope="row" class="tname">ComfyUI Cloud + MCP</th>
+      <td><span class="cat" style="--c:#e5a3ff">Automation</span></td>
+      <td class="was">Agent drives image/video gen by prompt (reference stack, one-click suite via MD files)<details class="tdetail"><summary>Show details</summary><span>A Comfy Cloud MCP connects an AI agent (Claude/Codex) to a ComfyUI install; MD files give the agent context. One tutorial built a one-click &#x27;influencer suite&#x27; (reference face → images → IG overlays → videos in a single task). Demo output not yet production-ready; a full cloud run (images + 3 clips) ≈ $15.</span></details></td>
+      <td class="price">~$15/run (cloud) · local GPU cheaper</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--new)">some fit</b><span class="fit-t">Max control, overkill to start</span></td>
+    </tr><tr id="t-heygen">
+      <th scope="row" class="tname">HeyGen</th>
+      <td><span class="cat" style="--c:#56b6c2">Avatar video</span></td>
+      <td class="was">AI avatar / talking-head; HyperFrames = its OSS engine<details class="tdetail"><summary>Show details</summary><span>Established avatar/talking-head platform. Notably open-sourced its video engine as HyperFrames (HTML→MP4, deterministic) — the self-host route for the same core tech.</span></details></td>
+      <td class="price">from ~$24/mo</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--new)">some fit</b><span class="fit-t">Testimonial UGC, narrower</span></td>
+    </tr><tr id="t-kie-ai">
+      <th scope="row" class="tname">kie.ai</th>
+      <td><span class="cat" style="--c:#4db6ac">Engine API</span></td>
+      <td class="was">One API key for Veo, Sora, Kling, Seedance… at 30–70% below official pricing<details class="tdetail"><summary>Show details</summary><span>A unified API aggregator: one key and one integration for many video / image / LLM models (Veo, Sora, Kling, Seedance, Runway, Claude, GPT, Gemini). Switch models without rebuilding your backend. Most models ~30% cheaper, high-demand ones 60–70% cheaper than official APIs. Not a workflow — the cost layer under any DIY / agentic pipeline (Claude Code, n8n, ComfyUI).</span></details></td>
+      <td class="price">Sora 2 from $0.015/s · Veo 3 up to 70% cheaper</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--new)">some fit</b><span class="fit-t">Only if you go DIY — cheap engines</span></td>
+    </tr><tr id="t-chatgpt-images-2-0">
+      <th scope="row" class="tname">ChatGPT Images 2.0</th>
+      <td><span class="cat" style="--c:#c792ea">Image engine</span></td>
+      <td class="was">Static-ad generation, renders dense text / logos cleanly<details class="tdetail"><summary>Show details</summary><span>One brand name + URL → 40 production-ready static ads (headline, us-vs-them, testimonial, UGC-card, stat-callout templates). Renders dense copy and logos without the usual garbling.</span></details></td>
+      <td class="price">ChatGPT Plus / API</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--ok)">high fit</b><span class="fit-t">Static ads for listings &amp; PPC</span></td>
+    </tr><tr id="t-nano-banana-pro">
+      <th scope="row" class="tname">Nano Banana (Pro)</th>
+      <td><span class="cat" style="--c:#c792ea">Image engine</span></td>
+      <td class="was">Google Gemini-Image — consistent persona, clean text<details class="tdetail"><summary>Show details</summary><span>The key to persona consistency: locks a reference face so every clip shows the same &#x27;creator&#x27;. Renders on-screen text cleanly (works for slides too). Already in the reference stack.</span></details></td>
+      <td class="price">Gemini API / free tier</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--ok)">high fit</b><span class="fit-t">Persona consistency — brand-critical</span></td>
+    </tr><tr id="t-hyperframes-heygen-oss">
+      <th scope="row" class="tname">HyperFrames (HeyGen OSS)</th>
+      <td><span class="cat" style="--c:#8fbf7f">Open-source</span></td>
+      <td class="was">HTML → production-grade MP4, deterministic<details class="tdetail"><summary>Show details</summary><span>HeyGen open-sourced its video engine. Same HTML input → same MP4 output, deterministic. Native GSAP / Lottie / Three.js support. The free self-host path to avatar-grade video.</span></details></td>
+      <td class="price">free (GitHub)</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--dim)">low fit</b><span class="fit-t">Self-host, later phase</span></td>
+    </tr><tr id="t-moneyprinterturbo">
+      <th scope="row" class="tname">MoneyPrinterTurbo</th>
+      <td><span class="cat" style="--c:#8fbf7f">Open-source</span></td>
+      <td class="was">Keyword → script → video → subtitles → done<details class="tdetail"><summary>Show details</summary><span>One keyword in → script, visuals, subtitles, music, finished clip out. Portrait or landscape, minimal editing. From a curated list of 10 open-source repos that replace paid SaaS.</span></details></td>
+      <td class="price">free (GitHub)</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--dim)">low fit</b><span class="fit-t">DIY tinkering, not now</span></td>
+    </tr><tr id="t-voxcpm">
+      <th scope="row" class="tname">VoxCPM</th>
+      <td><span class="cat" style="--c:#8fbf7f">Open-source</span></td>
+      <td class="was">Voice-clone from a few seconds of audio, 20+ languages<details class="tdetail"><summary>Show details</summary><span>Clone a voice from a few seconds of audio; high-quality output in dozens of languages, or craft a custom voice from a text description. The OSS voice layer.</span></details></td>
+      <td class="price">free (GitHub)</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--dim)">low fit</b><span class="fit-t">Free voice-clone, save for later</span></td>
+    </tr><tr id="t-linah-ai">
+      <th scope="row" class="tname">Linah AI</th>
+      <td><span class="cat" style="--c:#2ecc9b">UGC platform</span></td>
+      <td class="was">Photo → 150+ avatars, voice-clone, FB-Ads integration<details class="tdetail"><summary>Show details</summary><span>Upload a photo → scripts, 150+ lifelike avatars, voice-cloning in 20+ languages, edits, ready-to-run videos. FB-Ads integration claims 500 ad variations per minute from 1–3 product images.</span></details></td>
+      <td class="price">paid plans (code VIRAL30 −30%)</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--new)">some fit</b><span class="fit-t">Ad-focused MakeUGC alternative</span></td>
+    </tr><tr id="t-makeugc">
+      <th scope="row" class="tname">MakeUGC</th>
+      <td><span class="cat" style="--c:#2ecc9b">UGC platform</span></td>
+      <td class="was">All-in-one: 6 video models, 500+ AI creators, 50+ languages<details class="tdetail"><summary>Show details</summary><span>Startup $49 (5 videos), Growth $69 (10), Pro $119 (20); 20% off annual. Bundles Sora 2, Veo 3.1, Kling 2.6, WAN 2.6, Pixverse V5, Seedance 2.0 under one login. ~55% cheaper than Arcads at entry.</span></details></td>
+      <td class="price">$49–119/mo</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--ok)">high fit</b><span class="fit-t">Your best first test</span></td>
+    </tr><tr id="t-kling-2-6">
+      <th scope="row" class="tname">Kling 2.6</th>
+      <td><span class="cat" style="--c:#7c9cff">Video engine</span></td>
+      <td class="was">Strong on product shots<details class="tdetail"><summary>Show details</summary><span>Kling 2.6 Pro is the go-to for tight product shots inside the platforms. Often paired with Sora (lifestyle) and Veo (outdoor) in the same workflow.</span></details></td>
+      <td class="price">credits / platform</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--ok)">high fit</b><span class="fit-t">Best for product shots</span></td>
+    </tr><tr id="t-pika">
+      <th scope="row" class="tname">Pika</th>
+      <td><span class="cat" style="--c:#7c9cff">Video engine</span></td>
+      <td class="was">AI video, used for history vlogs<details class="tdetail"><summary>Show details</summary><span>Cited in the faceless AI-vlog stack (Claude script + Pika + ElevenLabs, under $50/mo total). Fast, cheap clips for short-form character vlogs.</span></details></td>
+      <td class="price">from ~$10/mo</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--dim)">low fit</b><span class="fit-t">Faceless-vlog engine, not your case</span></td>
+    </tr><tr id="t-seedance-2-0">
+      <th scope="row" class="tname">Seedance 2.0</th>
+      <td><span class="cat" style="--c:#7c9cff">Video engine</span></td>
+      <td class="was">Video generation (already in the reference stack)<details class="tdetail"><summary>Show details</summary><span>The video engine in the ComfyUI-MCP reference stack. Also bundled inside MakeUGC. Ships alongside Nano Banana Pro for image→video.</span></details></td>
+      <td class="price">platform credits</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--new)">some fit</b><span class="fit-t">Already in your reference stack</span></td>
+    </tr><tr id="t-sora-2-pro">
+      <th scope="row" class="tname">Sora 2 / Pro</th>
+      <td><span class="cat" style="--c:#7c9cff">Video engine</span></td>
+      <td class="was">OpenAI — strong on lifestyle / abstract scenes<details class="tdetail"><summary>Show details</summary><span>Sora 2 Pro at 1080p is the premium tier inside MakeUGC (1.5 credits/clip vs 0.5 for the standard engines). Handles abstract and lifestyle scenes best.</span></details></td>
+      <td class="price">ChatGPT Plus/Pro or platform credits</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--dim)">low fit</b><span class="fit-t">Premium tier, rarely needed first</span></td>
+    </tr><tr id="t-veo-3-1">
+      <th scope="row" class="tname">Veo 3.1</th>
+      <td><span class="cat" style="--c:#7c9cff">Video engine</span></td>
+      <td class="was">Google&#x27;s video model — strong on outdoor / real-world footage<details class="tdetail"><summary>Show details</summary><span>Bundled inside most UGC platforms rather than used raw. Best pick for realistic outdoor/lifestyle b-roll. Combined with Nano Banana for a consistent on-screen persona.</span></details></td>
+      <td class="price">platform credits (e.g. MakeUGC from $49/mo)</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--new)">some fit</b><span class="fit-t">Lifestyle b-roll, via a platform</span></td>
+    </tr><tr id="t-wan-2-6-pixverse-v5">
+      <th scope="row" class="tname">WAN 2.6 / Pixverse V5</th>
+      <td><span class="cat" style="--c:#7c9cff">Video engine</span></td>
+      <td class="was">Further engines (bundled in MakeUGC)<details class="tdetail"><summary>Show details</summary><span>Additional engines available under the same MakeUGC login — more style options for A/B testing across model looks.</span></details></td>
+      <td class="price">platform credits</td>
+      <td><span class="badge" style="--b:var(--ok)">live</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--dim)">low fit</b><span class="fit-t">Extra style options, optional</span></td>
+    </tr></tbody>
+</table>
+<details class="pd" style="border-left-color:var(--acc);margin-top:14px">
+  <summary><span>🔬 The competitor-teardown skill, in depth — the sharpest single tool for a small team</span> <span class="exp"><span class="lbl"></span></span></summary>
+  <div class="pd-body">
+    <div class="dd-lead">The idea in one line: instead of a media buyer scrubbing competitor ads frame by frame — pausing, screenshotting on-screen text, and by the tenth video forgetting what made the first one land — you drop the video into Claude Code and get a structured creative teardown back in minutes. It's the closest thing here to a shortcut, because it turns "study what's already working" from half a day of manual work into a repeatable command.</div>
+    <div class="v-row"><span class="v-k">How</span><span class="v-t">Drop any video file — a competitor UGC ad, a Meta ad, an organic TikTok, a produced ad, even a Loom / screen-recording — into Claude Code. The skill routes it through the Gemini API for <b>native video understanding</b>: Gemini actually watches the footage, it doesn't just read a transcript.</span></div>
+    <div class="v-row"><span class="v-k">Output</span><span class="v-t">A structured teardown, not a summary: <b>hook breakdown</b> (the first 3 seconds) · <b>angle + target audience</b> · <b>pain point + CTA</b> · <b>beat-by-beat</b> scene structure · <b>verbatim on-screen text and dialogue with timestamps</b> · and <b>hook variations generated directly from the competitor's own ad</b> — steal-worthy patterns to apply to your own creative.</span></div>
+    <div class="v-row"><span class="v-k">Edge</span><span class="v-t">Native video understanding beats a transcript tool: it reads the on-screen text, the pacing and the visual hook, not only the spoken words. That's the difference between a rough summary and an actual creative breakdown — and why the output is usable, not just informational.</span></div>
+    <div class="v-row"><span class="v-k">Kills</span><span class="v-t">Reverse-engineering competitor ads is a weekly job for media buyers, and by hand it's slow and lossy. This makes it fast, structured and repeatable — the same skill works across UGC ads, produced ads, TikToks and Looms.</span></div>
+    <div class="v-row"><span class="v-k">Setup</span><span class="v-t">Built 100% in Claude Code plus a Gemini API key — no new platform, no subscription. The author gave the skill away free (and recorded how he built it); you rebuild it inside the Claude Code you already run.</span></div>
+    <div class="v-row"><span class="v-k">Cost</span><span class="v-t">~$0.27 per 30-minute video. Run it across 20 competitor ads for about $5 total — versus roughly $200/mo for a dedicated ad-intelligence platform. For a small team that price gap is the whole argument.</span></div>
+    <div class="v-row"><span class="v-k">For you</span><span class="v-t">Point it at Loop / Alpine / HearProtek ads → surface which angles the category actually spends on (sleep, concerts, focus, kids) → map those to your products → generate on a platform. It's step 2 of the playbook and the sharpest part of the loop.</span></div>
+    <div class="v-row"><span class="v-k">Limit</span><span class="v-t">It's analysis, not a generator — it tells you what to make, it doesn't make it. Its value equals the ads you feed it times the action you take next. Pair it with a generator (a platform like MakeUGC) to close the loop; alone it's a very good report.</span></div>
+  </div>
+</details>
+
+<h2 class="sec">🧩 Use-case clusters <span class="hint">— expand “full post” on any card</span></h2>
+<section class="cluster">
+      <div class="cl-head"><span class="cl-num">1</span><h3>All-in-one UGC-ad platforms</h3></div>
+      <p class="cl-desc">Photo or prompt in → finished UGC video ad out. Replace the entire creator production pipeline (no filming, no editing, no creator sourcing).</p>
+      <div class="chips"><span class="chip">MakeUGC</span><span class="chip">Linah AI</span><span class="chip">Fastlane</span></div>
+      <div class="bks"><div class="bk">
+          <div class="bk-h"><a href="https://x.com/TawohAwa/status/1986076697477673154" target="_blank" rel="noopener">@TawohAwa</a>
+            <span class="meta">Wed Nov 05 14:22 · 8k views</span></div>
+          <div class="bk-t">MakeUGC V.2 is wild.  It works like a full creative studio packed into one dashboard.  - Generates cinematic UGC ads from a single prompt - Matches yo…</div><details class="bk-full"><summary>Read full post</summary><div>MakeUGC V.2 is wild.  It works like a full creative studio packed into one dashboard.  - Generates cinematic UGC ads from a single prompt - Matches your brand tone and style automatically - Optimizes pacing, lighting, and realism in seconds  Sora2 Pro, Veo3.1, and Kling working together — full control, zero effort.  And when you connect it with the new AI agents, it becomes a studio that runs itself:  - AI agents research trends and write ad scripts - MakeUGC V.2 generates and tests video variations automatically - Winning creatives are refined and re-launched instantly  - Performance data feeds back to improve every next ad  No teams.  No waiting.  Just AI — creating at scale, nonstop.  RT + comment “V2” and I’ll send the full walkthrough.  (follow for dm)</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--ok)">high fit</b><span class="take-t">Your recommended starting point — a cheap platform test with real output.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Audience play (comment V2 → DM).</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>MakeUGC is real and verified; &#x27;a studio that runs itself&#x27; is marketing gloss.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">high fit</b>MakeUGC is the recommended start route — a cheap platform test with real output.</span></div></div></details>
+        </div><div class="bk">
+          <div class="bk-h"><a href="https://x.com/demirdjiantwins/status/1996228925958357321" target="_blank" rel="noopener">@demirdjiantwins</a>
+            <span class="meta">Wed Dec 03 14:43 · 3k views</span></div>
+          <div class="bk-t">Nano Banana + Linah AI + Facebook Ads Automation is legitimately insane 🤯  This Linah integration turns your account into a 500-ad-per-minute creative…</div><details class="bk-full"><summary>Read full post</summary><div>Nano Banana + Linah AI + Facebook Ads Automation is legitimately insane 🤯  This Linah integration turns your account into a 500-ad-per-minute creative machine.  It doesn’t just analyze your ads… It creates them. Optimizes them. Rebuilds them. All from a single prompt.  Perfect for agencies &amp; e-comm brands drowning in creative fatigue and skyrocketing CAC.  Here’s the real problem:  Facebook’s algorithm wants volume. You need 100–300 fresh creatives every week to stay ahead.  But manually producing ads? You’re briefing designers, editing variations, resizing formats… And by the time you&#x27;re done, half of them are already stale.  Linah solves that instantly.  Here’s the workflow:  → Connect your Facebook Ad Account to Linah → Upload 1–3 product images or existing ads → Ask Linah: “Generate 500 new ad variations for testing” → Linah creates 500+ fresh ads in minutes → Variations across hooks, layouts, styles, models, angles → Auto-formatted for all FB/IG placements → Ready to upload directly to Ads Manager  No designers. No editors. No waiting. No creative fatigue.  What you can generate instantly:  → 500+ new static ads → 50+ new UGC video concepts → Multiple demographic-specific variations → Fresh hooks, offers, angles, headlines → Full creative batches for A/B/C/D testing  Plus the Linah analytics layer:  → Performance summaries from your FB Ads data → Campaign + ad set breakdowns → Audience + placement insights → Optimization recommendations → All generated in real time from one prompt  Built 100% inside Linah AI.  If you run paid social, this is a cheat code.  Want the full setup guide &amp; workflow template?  Comment “MCP” Like this post  (Must be following so I can DM you)</div></details><div class="mytake"><b class="vb" style="--vc:var(--bad)">castle in the air</b><b class="vb" style="--vc:var(--new)">some fit</b><span class="take-t">Linah is real; the &#x27;500/min&#x27; is theatre — judge on quality, not count.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Audience play (comment MCP → DM).</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--bad)">castle in the air</b>&#x27;500 ad variations per minute&#x27; is a castle number — technically generable, but 500 usable ads/min is nonsense. Linah itself is real.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--new)">some fit</b>Linah is a legit platform; ignore the volume theatre and judge on 5 good ads, not 500.</span></div></div></details>
+        </div><div class="bk">
+          <div class="bk-h"><a href="https://x.com/demirdjiantwins/status/1987564643783700635" target="_blank" rel="noopener">@demirdjiantwins</a>
+            <span class="meta">Sun Nov 09 16:55 · 33k views</span></div>
+          <div class="bk-t">Nano Banana + Linah AI + n8n is legitimately insane 🤯  This workflow generates hundreds of UGC-style product-in-hand videos from a single product phot…</div><details class="bk-full"><summary>Read full post</summary><div>Nano Banana + Linah AI + n8n is legitimately insane 🤯  This workflow generates hundreds of UGC-style product-in-hand videos from a single product photo.  Fully automated inside n8n.  Perfect for DTC brands &amp; agencies that need constant creative volume for paid social.  Here’s the bottleneck every brand hits:  You need 50+ ad variations to fight creative fatigue. But coordinating creators, filming, and editing takes weeks and costs thousands.  This automation removes all of that:  → Upload ONE product image into n8n → Linah AI generates 20–50 product-in-hand visual variations → Each variation is turned into UGC-style video scenes → AI auto-creates demos, testimonials, reactions &amp; lifestyle shots → All outputs save directly to Box / Drive / Airtable for instant launch  No creator sourcing. No shoot days. No revision delays.  What you get:  → Dozens of ready-to-run UGC ads from a single product photo → Costs pennies per video → Full commercial rights → Perfect for rapid A/B testing &amp; scaling campaigns  Built 100% in n8n + Linah AI.  Want the exact workflow setup?  Comment “BANANA” Like this post  And I’ll DM you the full automation (must be following).</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--ok)">high fit</b><span class="take-t">The single best-fit workflow here — one product photo to in-hand ads.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Audience play (comment BANANA → DM).</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>&#x27;Product-in-hand UGC from one photo&#x27; is real and strong; &#x27;hundreds, fully automated&#x27; is volume hype.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">high fit</b>1 product photo → product-in-hand UGC is DIRECT for a physical product (earplugs in-hand / in-ear). Highest-fit workflow here.</span></div></div></details>
+        </div><div class="bk">
+          <div class="bk-h"><a href="https://x.com/jock_ferguson/status/2069835376437682336" target="_blank" rel="noopener">@jock_ferguson</a>
+            <span class="meta">Wed Jun 24 17:29 · 901k views</span></div>
+          <div class="bk-t">Today, we&#x27;re introducing Claude for Content.  Just enter your website, and Fastlane creates thousands of viral videos for your product in one click.  …</div><details class="bk-full"><summary>Read full post</summary><div>Today, we&#x27;re introducing Claude for Content.  Just enter your website, and Fastlane creates thousands of viral videos for your product in one click.  This is unbelievable. https://t.co/APOZvksb1M</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--new)">some fit</b><span class="take-t">Real tool, hyped claim — a volume experiment, not a brand-building bet.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">SaaS — this post is the product launch; the money is selling the tool.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>Tool is real and verified; &#x27;thousands of viral videos in one click&#x27; is marketing — volume ≠ viral.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--new)">some fit</b>Turnkey distribution but you hand over all brand control. A volume test, not a core bet.</span></div></div></details>
+        </div></div>
+    </section><section class="cluster">
+      <div class="cl-head"><span class="cl-num">2</span><h3>Agentic end-to-end (website → published)</h3></div>
+      <p class="cl-desc">The new leading edge: not just generate a video, but the whole cycle — research, script, video, calendar, auto-publish, analytics feedback. AI as a full content team.</p>
+      <div class="chips"><span class="chip">Fastlane (Claude for Content)</span></div>
+      <div class="bks"><div class="bk">
+          <div class="bk-h"><a href="https://x.com/jock_ferguson/status/2069835376437682336" target="_blank" rel="noopener">@jock_ferguson</a>
+            <span class="meta">Wed Jun 24 17:29 · 901k views</span></div>
+          <div class="bk-t">Today, we&#x27;re introducing Claude for Content.  Just enter your website, and Fastlane creates thousands of viral videos for your product in one click.  …</div><details class="bk-full"><summary>Read full post</summary><div>Today, we&#x27;re introducing Claude for Content.  Just enter your website, and Fastlane creates thousands of viral videos for your product in one click.  This is unbelievable. https://t.co/APOZvksb1M</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--new)">some fit</b><span class="take-t">Real tool, hyped claim — a volume experiment, not a brand-building bet.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">SaaS — this post is the product launch; the money is selling the tool.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>Tool is real and verified; &#x27;thousands of viral videos in one click&#x27; is marketing — volume ≠ viral.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--new)">some fit</b>Turnkey distribution but you hand over all brand control. A volume test, not a core bet.</span></div></div></details>
+        </div></div>
+    </section><section class="cluster">
+      <div class="cl-head"><span class="cl-num">3</span><h3>Video &amp; image engines (the models underneath)</h3></div>
+      <p class="cl-desc">The raw generation models the platforms bundle — freely combinable in your own workflow.</p>
+      <div class="chips"><span class="chip">Veo 3.1</span><span class="chip">Sora 2 / Pro</span><span class="chip">Kling 2.6</span><span class="chip">Seedance 2.0</span><span class="chip">Nano Banana (Pro)</span><span class="chip">Pika</span></div>
+      <div class="bks"><div class="bk">
+          <div class="bk-h"><a href="https://x.com/fabianstelzer/status/1994080756382028271" target="_blank" rel="noopener">@fabianstelzer</a>
+            <span class="meta">Thu Nov 27 16:27 · 146k views</span></div>
+          <div class="bk-t">Nano Banana Pro can do essentially perfect text, which means it can do slides - paired with Kling transitions, it&#x27;s an insanely cool new format for ho…</div><details class="bk-full"><summary>Read full post</summary><div>Nano Banana Pro can do essentially perfect text, which means it can do slides - paired with Kling transitions, it&#x27;s an insanely cool new format for how to do presentations  here&#x27;s a tutorial on how to do it all with an agent: https://t.co/ac5AZQvVGa</div></details><div class="mytake"><b class="vb" style="--vc:var(--ok)">real</b><b class="vb" style="--vc:var(--dim)">low fit</b><span class="take-t">Honest, no sales pitch — niche use (slides), but clean on-screen text is worth noting.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">No sale — a real practitioner (Glif founder) sharing a tutorial.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">real</b>Legit. Nano Banana Pro renders clean text (slides) paired with Kling transitions. Honest use-case.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--dim)">low fit</b>Slides, not UGC ads — but Nano Banana Pro for clean on-screen text is worth noting for ad overlays.</span></div></div></details>
+        </div></div>
+    </section><section class="cluster">
+      <div class="cl-head"><span class="cl-num">4</span><h3>Automated ad pipelines (n8n / agent)</h3></div>
+      <p class="cl-desc">Scrape competitor ads → analyse with AI → generate fresh variants → test. On autopilot, hundreds of creatives/week against creative fatigue.</p>
+      <div class="chips"><span class="chip">n8n</span><span class="chip">Veo 3.1</span><span class="chip">Nano Banana (Pro)</span><span class="chip">ComfyUI Cloud + MCP</span></div>
+      <div class="bks"><div class="bk">
+          <div class="bk-h"><a href="https://x.com/mikefutia/status/2000998066946777128" target="_blank" rel="noopener">@mikefutia</a>
+            <span class="meta">Tue Dec 16 18:34 · 21k views</span></div>
+          <div class="bk-t">This Facebook Ads → Veo 3 Agent is absolutely insane 🤯  This n8n agent scrapes competitor video ads from the Facebook Ad Library...  Analyzes them wit…</div><details class="bk-full"><summary>Read full post</summary><div>This Facebook Ads → Veo 3 Agent is absolutely insane 🤯  This n8n agent scrapes competitor video ads from the Facebook Ad Library...  Analyzes them with AI...  And generates fresh video variants using Google Veo 3.  All on autopilot.  Perfect for e-comm brands &amp; agencies who need endless creative without the manual research.  Look:  You&#x27;re spending hours in the Facebook Ad Library.  Screenshotting winning ads. Manually noting what hooks are working. Trying to brief your team on &quot;make something like this.&quot;  And by the time you produce a variant, the original ad is already fatigued.  This n8n agent handles it all:  → Scrapes competitor video ads from Facebook Ad Library → Gemini Vision analyzes hooks, CTAs, and creative elements → AI crafts detailed prompts based on what&#x27;s working → Veo 3 generates fresh video variants automatically → Everything tracked in Google Sheets  No manual ad library browsing.  No creative briefs.  No waiting on production.  What you get:  - Competitor intelligence on autopilot - AI breakdowns of winning creative elements - Fresh video variants generated instantly - Organized tracking in Google Sheets  See a winning ad. Generate your own version. Repeat.  Built 100% in n8n.  Want the full workflow?  👉 Like this post 👉 Re-post 👉 Comment &quot;VEO&quot;  And I&#x27;ll send it over (must be following so I can DM)</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--ok)">high fit</b><span class="take-t">Great idea, but you can do the teardown without building a bot for it.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Audience play — give the workflow free for a follow.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>The n8n scrape→Veo 3 agent is real; &#x27;endless creative on autopilot&#x27; overstates it — output still needs curation.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">high fit</b>Competitor-teardown automation — but honestly, you likely don&#x27;t need n8n (see the cluster note).</span></div></div></details>
+        </div><div class="bk">
+          <div class="bk-h"><a href="https://x.com/mikefutia/status/1969451237327454648" target="_blank" rel="noopener">@mikefutia</a>
+            <span class="meta">Sat Sep 20 17:19 · 283k views</span></div>
+          <div class="bk-t">Nano Banana + Veo 3 + n8n is absolutely WILD 🤯  This AI system creates UGC videos with consistent characters &amp; product shots at scale.  And auto-stitc…</div><details class="bk-full"><summary>Read full post</summary><div>Nano Banana + Veo 3 + n8n is absolutely WILD 🤯  This AI system creates UGC videos with consistent characters &amp; product shots at scale.  And auto-stitches everything together into finished content.  Perfect for e-comm operators &amp; creative agencies who need brand consistency.  Just upload ONE product image and get complete UGC campaigns with the same character across all videos.  Here&#x27;s how it works:  → Upload product image via n8n form → AI analyzes your product automatically   → Nano Banana generates consistent character variations → Veo 3 creates multiple video scenes with same talent → Auto-combines all clips into final campaign video → Ready-to-download UGC content in minutes  Built 100% in n8n.   Fully automated character consistency.  Want the complete n8n workflow?  Comment &quot;BANANA&quot; + like and I&#x27;ll send it over (must be following so I can DM)</div></details><div class="mytake"><b class="vb" style="--vc:var(--ok)">real</b><b class="vb" style="--vc:var(--ok)">high fit</b><span class="take-t">Persona consistency is the real unlock for a coherent brand feel.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Audience play (comment BANANA → DM).</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">real</b>Consistent characters via Nano Banana is real and important — persona consistency across clips.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">high fit</b>A recurring AI brand-creator across every ad — genuinely useful for a coherent brand feel.</span></div></div></details>
+        </div></div>
+    </section><div class="callout"><div class="ot">⚡ <b>Do you even need n8n?</b> It shows up in most of these workflows — but it is <strong>orchestration glue, not the video generator</strong>. If you already have an agentic-coding setup (Claude Code / Codex) plus a scheduler, the same flow is just a script the agent writes — no extra service to host, secure and maintain. n8n's real edge is a <strong>visual flow a non-coder can edit</strong> plus built-in retry / error-history out of the box. <strong>The simple rule: skip it unless that visual layer earns its keep.</strong></div></div><section class="cluster">
+      <div class="cl-head"><span class="cl-num">5</span><h3>Faceless / AI-persona content</h3></div>
+      <p class="cl-desc">Consistent AI characters for faceless YouTube, history vlogs, talking-head ads — cents per clip instead of production days.</p>
+      <div class="chips"><span class="chip">Nano Banana (Pro)</span><span class="chip">Pika</span><span class="chip">ElevenLabs</span><span class="chip">Veo 3.1</span></div>
+      <div class="bks"><div class="bk">
+          <div class="bk-h"><a href="https://x.com/seylorra/status/2066697076478513290" target="_blank" rel="noopener">@seylorra</a>
+            <span class="meta">Tue Jun 16 01:39 · 10k views</span></div>
+          <div class="bk-t">He&#x27;s flexing a $12,000 month cheat code for AI history vlogs.  The cheat code is one line of grey text in the bio of the channel he&#x27;s pointing at.  Pa…</div><details class="bk-full"><summary>Read full post</summary><div>He&#x27;s flexing a $12,000 month cheat code for AI history vlogs.  The cheat code is one line of grey text in the bio of the channel he&#x27;s pointing at.  Pause at 0:07 Under Chloe VS History &quot;Powered by PIO AI&quot; The &quot;secret&quot; he&#x27;s about to gate behind a long breakdown on his other channel is the second sentence of the description he&#x27;s already filming.  He doesn&#x27;t notice. He keeps clicking.  &quot;Fully AI channel making at least 12k a month.&quot; &quot;All you need is a character vlogging as a time traveler.&quot; &quot;I have a cheat code.&quot; Behind him, a silver YouTube play button propped on the desk next to a meme Doge plushie like a movie prop.  The Titanic video he points at did 2.1M views in one month. Chloe VS History has 35,800 subscribers and 36 uploads. His own channel, adavia, has 24,100 subs and a bio that says &quot;im a professional chiller.&quot;  None of this is the point.  The point is what&#x27;s under the hood. A script Claude writes in twelve seconds: &quot;POV vlog, you are a tourist on the Titanic, four 15 second scenes.&quot; A face locked through one reference photo. A voice slightly out of breath. The whole stack runs on $20 Claude plus Pika and ElevenLabs.  Under $50 a month for the entire factory.  His thumbnails say $51,590.12 and $70,125.60. The real revenue is the comment under this Short: &quot;watch my breakdowns.&quot; The breakdowns sell a $47 community.  He&#x27;s not making $12k a month on AI vlogs.  He makes it teaching people the thing that&#x27;s printed in the bio for free.  Drop &quot;TIME&quot; in the replies and I&#x27;ll DM you the exact Claude prompt and the Pika pipeline. No 40 minute funnel.</div></details><div class="mytake"><b class="vb" style="--vc:var(--bad)">castle in the air</b><b class="vb" style="--vc:var(--dim)">low fit</b><span class="take-t">Best post in the set — it exposes how the &#x27;guru&#x27; actually earns (a course, not the vlogs).</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">He EXPOSES the model: the guy&#x27;s real $12k/mo isn&#x27;t the vlogs — it&#x27;s a $47 community teaching the free thing printed in his bio.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--bad)">castle in the air</b>The vlog stack is real (&lt;$50/mo: Claude + Pika + ElevenLabs). The &#x27;$12k/mo from vlogs&#x27; is the illusion — the money is selling the dream.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--dim)">low fit</b>Faceless vlogs aren&#x27;t your business. Keep the lesson though: most &#x27;$Xk/mo&#x27; claims are course sales, not the advertised business.</span></div></div></details>
+        </div><div class="bk">
+          <div class="bk-h"><a href="https://x.com/Mho_23/status/2066587092386464116" target="_blank" rel="noopener">@Mho_23</a>
+            <span class="meta">Mon Jun 15 18:22 · 6k views</span></div>
+          <div class="bk-t">AI UGC talking head is fire..  preview of my V3 system  this costs me less than $1 to make  this system has: &gt; realistic voice with no robotic AI tone…</div><details class="bk-full"><summary>Read full post</summary><div>AI UGC talking head is fire..  preview of my V3 system  this costs me less than $1 to make  this system has: &gt; realistic voice with no robotic AI tone &gt; realistic movement &gt; realistic visuals  and these videos are fast to make. this doesn&#x27;t require 1 hour of post editing just to get a decent result  i literally made this video in 7 minutes from the first prompt to final export  this is beating everything out there..</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--new)">some fit</b><span class="take-t">The tech is real and cheap; treat &#x27;beats everything&#x27; as noise.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Showcasing his &#x27;V3 system&#x27; to build audience and sell it later.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>Talking-head under $1 is real — costs have collapsed. &#x27;Beating everything out there&#x27; is bravado.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--new)">some fit</b>AI testimonial UGC maps to product reviews; useful once you have a consistent persona.</span></div></div></details>
+        </div><div class="bk">
+          <div class="bk-h"><a href="https://x.com/Adam_DelDuca/status/1651540808682684416" target="_blank" rel="noopener">@Adam_DelDuca</a>
+            <span class="meta">Thu Apr 27 10:56 · 2852k views</span></div>
+          <div class="bk-t">Everyone should own a faceless YouTube channel that earns $5,000/mo  Sadly, most people think this takes years to achieve  Here’s how to do it in the …</div><details class="bk-full"><summary>Read full post</summary><div>Everyone should own a faceless YouTube channel that earns $5,000/mo  Sadly, most people think this takes years to achieve  Here’s how to do it in the next 180 days:</div></details><div class="mytake"><b class="vb" style="--vc:var(--bad)">castle in the air</b><b class="vb" style="--vc:var(--dim)">low fit</b><span class="take-t">Guru framing — not your business, pattern value only.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Almost certainly a course sale (the classic &#x27;here&#x27;s how in 180 days&#x27; hook — post is truncated).</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--bad)">castle in the air</b>&#x27;Everyone should own a $5k/mo faceless channel&#x27; is guru framing — possible, but not the easy layup it&#x27;s sold as.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--dim)">low fit</b>Not your business. Pattern-recognition value only.</span></div></div></details>
+        </div></div>
+    </section><section class="cluster">
+      <div class="cl-head"><span class="cl-num">6</span><h3>Hook / script / creative intelligence</h3></div>
+      <p class="cl-desc">The tactics layer: hooks, the first 3 seconds, competitor teardown. Tool-assisted but strategy-driven — what makes a video work at all.</p>
+      <div class="chips"><span class="chip">Claude Code + Gemini skill</span></div>
+      <div class="bks"><div class="bk">
+          <div class="bk-h"><a href="https://x.com/adamtaylorl/status/2064361893607915948" target="_blank" rel="noopener">@adamtaylorl</a>
+            <span class="meta">Tue Jun 09 15:00 · 15k views</span></div>
+          <div class="bk-t">Meta’s Andromeda update just DESTROYED the old way of writing hooks.  I put together my Hook Psychology &amp; First 3 Seconds Masterclass.  With the shift…</div><details class="bk-full"><summary>Read full post</summary><div>Meta’s Andromeda update just DESTROYED the old way of writing hooks.  I put together my Hook Psychology &amp; First 3 Seconds Masterclass.  With the shift to messaging targeting, this is the only way to capture native attention in 2026.  I speak to 10+ DTC founders a week. Every single one is panicking because their &quot;winning&quot; hooks are fatiguing in 48 hours.  This masterclass fixes that.  I use these to scale 9-figure brands without the creative guesswork:  • The &quot;Visual First&quot; Hierarchy • Awareness Level Mapping • The &quot;Native Environment&quot; Brief • The 3-Second Psychological Trigger • Hook vs. Angle Alignment • The &quot;BS Radar&quot; Filter • 10-Minute Video Masterclass  Want access?  → Comment &quot;HOOK&quot; → Follow me and I&#x27;ll DM you the masterclass</div></details><div class="mytake"><b class="vb" style="--vc:var(--ok)">real</b><b class="vb" style="--vc:var(--ok)">high fit</b><span class="take-t">Hooks are your bottleneck — worth studying even behind a sales pitch.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Sells a &#x27;Hook Masterclass&#x27; (comment HOOK → DM) — lead-gen for his consulting.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">real</b>Hook psychology is real and it IS the bottleneck. &#x27;Meta Andromeda destroyed everything&#x27; is urgency framing.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">high fit</b>Hooks are your bottleneck (see the patterns). Study winning hooks before you generate a single clip.</span></div></div></details>
+        </div><div class="bk">
+          <div class="bk-h"><a href="https://x.com/mikefutia/status/2069213352484880752" target="_blank" rel="noopener">@mikefutia</a>
+            <span class="meta">Tue Jun 23 00:18 · 40k views</span></div>
+          <div class="bk-t">I just built a skill that lets Claude Code watch &amp; analyze ANY video 🤯  Drop in any video file — UGC ads, competitor Meta ads, organic TikToks, screen…</div><details class="bk-full"><summary>Read full post</summary><div>I just built a skill that lets Claude Code watch &amp; analyze ANY video 🤯  Drop in any video file — UGC ads, competitor Meta ads, organic TikToks, screen recordings — and Claude hands you back a full creative teardown.  All inside Claude Code.  Perfect for media buyers and creative strategists who reverse-engineer competitor ads every week — and lose half a day doing it by hand.  If your creative process starts with studying what&#x27;s already working,  you&#x27;re scrubbing through competitor ads frame by frame,  pausing to write down every hook,  screenshotting the on-screen text,  and by the tenth video you can&#x27;t remember what made the first one land...  This skill solves it:  → Drop any video file into Claude Code → Skill routes it through the Gemini API for native video understanding → Returns a full creative teardown — hook breakdown, target audience, angle, beat-by-beat, on-screen text verbatim → Surfaces the steal-worthy patterns you can apply to your own creative → Same skill works on UGC ads, produced video ads, organic TikToks, and Loom recordings  No manual scrubbing. No pausing every 5 seconds. No $200/mo ad intelligence platform.  What you get:  → Native video understanding via Gemini (not just transcripts) → Structured analysis — hook, angle, audience, pain point, CTA → Verbatim on-screen text and dialogue with timestamps → Hook variations generated directly from competitor ads → About 27 cents per 30-minute video  Built 100% in Claude Code with the Gemini API.  I recorded a full breakdown showing exactly how I built this, and I&#x27;m giving away the skill for free.  Want the skill?  &gt; Like this post &gt; Comment &quot;CLAUDE&quot;  And I&#x27;ll send it over (must be following so I can DM)</div></details><div class="mytake"><b class="vb" style="--vc:var(--ok)">real</b><b class="vb" style="--vc:var(--ok)">high fit</b><span class="take-t">The genuinely useful one here — feeds your competitor analysis directly.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Audience play — &#x27;comment CLAUDE, I DM the skill&#x27; is lead-gen for his following (monetised later via courses / community).</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">real</b>The skill genuinely works (Gemini native video understanding). The give-it-free mechanic is the funnel, the tool is not.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">high fit</b>This is the input to your teardown playbook — competitor-ad analysis you&#x27;d actually run.</span></div></div></details>
+        </div><div class="bk">
+          <div class="bk-h"><a href="https://x.com/lucaspatiri_/status/2059715349004640720" target="_blank" rel="noopener">@lucaspatiri_</a>
+            <span class="meta">Wed May 27 19:16 · 207k views</span></div>
+          <div class="bk-t">I scaled 30+ apps to $100K MRR with zero ad spend. 1.5 billion views generated. $1-2 CPM on average.  I&#x27;m finally dropping the full UGC playbook. 44 p…</div><details class="bk-full"><summary>Read full post</summary><div>I scaled 30+ apps to $100K MRR with zero ad spend. 1.5 billion views generated. $1-2 CPM on average.  I&#x27;m finally dropping the full UGC playbook. 44 pages. Every step, every price, every tool + viral formats with case studies  Lowkey scared to drop this because it&#x27;s literally what clients pay us $5K-$20K/month for.  Reply &quot;UGC&quot; and I&#x27;ll DM it to you.  Must be following so I can DM.</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--new)">some fit</b><span class="take-t">Real strategy, agency-flavoured numbers — relevant but built for app marketing.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Sells a 44-page playbook (reply UGC → DM) — lead-gen for his UGC agency (&#x27;clients pay $5k–20k/mo&#x27;).</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>UGC-at-scale for apps is real; &#x27;1.5B views, 30+ apps to $100k MRR&#x27; are the usual unverifiable agency numbers.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--new)">some fit</b>UGC volume strategy is relevant, but app-marketing-shaped, not a physical marketplace product.</span></div></div></details>
+        </div></div>
+    </section><section class="cluster">
+      <div class="cl-head"><span class="cl-num">7</span><h3>Static-ad generation (image)</h3></div>
+      <p class="cl-desc">Not video, but directly adjacent: bulk static ads with correct text &amp; branding from a brand name + URL.</p>
+      <div class="chips"><span class="chip">ChatGPT Images 2.0</span><span class="chip">Nano Banana (Pro)</span></div>
+      <div class="bks"><div class="bk">
+          <div class="bk-h"><a href="https://x.com/mikefutia/status/2057161725666005029" target="_blank" rel="noopener">@mikefutia</a>
+            <span class="meta">Wed May 20 18:09 · 46k views</span></div>
+          <div class="bk-t">Claude Code + ChatGPT Images 2.0 is f*cking cracked 🤯  I rebuilt my static ad system inside Claude Code on the new ChatGPT Images 2.0 model.  One bran…</div><details class="bk-full"><summary>Read full post</summary><div>Claude Code + ChatGPT Images 2.0 is f*cking cracked 🤯  I rebuilt my static ad system inside Claude Code on the new ChatGPT Images 2.0 model.  One brand name + one URL = 40 production-ready static ads.  All inside Claude Code.  I took @alexgoughcooper&#x27;s brilliant framework and automated the whole thing, now running on ChatGPT Images 2.0.  Perfect for DTC brands and agencies who need high-volume ad creative without briefing a designer or spending hours in Canva.  If you&#x27;re running static ads on Meta and your current image model keeps butchering your copy — garbled headlines, broken logos, wrong fonts, unusable text overlays every third generation...  This system fixes the entire pipeline:  → Give Claude a brand name and URL → It researches the brand&#x27;s fonts, colors, packaging, and photography style → Builds a Brand DNA document from scratch → Fills in Alex&#x27;s 40 proven ad templates (headline, us vs them, testimonial, UGC, review cards, stat callouts) with brand-specific details → Fires every prompt to ChatGPT Images 2.0 with your product photos as reference → Downloads finished ads into organized folders with an HTML gallery  No manual prompt filling. No Canva templates. No copy-pasting between tools.  What you get:  → 40 ad formats filled with your exact brand colors, fonts, and copy → Text that actually renders correctly — dense copy, logos, and multi-language callouts handled cleanly → Product photos passed as reference so the model matches your real packaging → A reusable system — new brand, new folder, same pipeline  Built 100% in Claude Code with ChatGPT Images 2.0.  I put together a full DIY playbook showing the exact architecture so you can build this yourself.  Want it for free?  &gt; Like this post &gt; Comment &quot;CHAT&quot;  And I&#x27;ll send it over (must be following so I can DM)</div></details><div class="mytake"><b class="vb" style="--vc:var(--ok)">real</b><b class="vb" style="--vc:var(--ok)">high fit</b><span class="take-t">Directly useful — bulk static ads for your listings and PPC.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Audience play — give the pack free for a follow.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">real</b>40 static ads from brand + URL is real — ChatGPT Images 2.0 renders dense text and logos cleanly.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">high fit</b>Static ads for marketplace listings / PPC. Directly applicable to a physical product.</span></div></div></details>
+        </div></div>
+    </section><section class="cluster">
+      <div class="cl-head"><span class="cl-num">8</span><h3>Open-source / self-host</h3></div>
+      <p class="cl-desc">Free &amp; self-hosted — full data control, no subscription. For the technical DIY route.</p>
+      <div class="chips"><span class="chip">HyperFrames (HeyGen OSS)</span><span class="chip">MoneyPrinterTurbo</span><span class="chip">VoxCPM</span></div>
+      <div class="bks"><div class="bk">
+          <div class="bk-h"><a href="https://x.com/NFTCPS/status/2063088254560407926" target="_blank" rel="noopener">@NFTCPS</a>
+            <span class="meta">Sat Jun 06 02:39 · 219k views</span></div>
+          <div class="bk-t">Family — today I&#x27;m digging up 10 absurdly-free GitHub repos, each one able to replace software you pay for monthly. Don&#x27;t say Brother Bird didn&#x27;t warn…</div><details class="bk-full"><summary>Read full post</summary><div>Family — today I&#x27;m digging up 10 absurdly-free GitHub repos, each one able to replace software you pay for monthly. Don&#x27;t say Brother Bird didn&#x27;t warn you.  1. TradingAgents — a whole AI analyst team arguing and placing trades inside your computer. Fundamental, sentiment, news and technical analysts all working at once, with a risk manager and execution agent making the final call. Like stuffing a Wall Street team into your laptop 24/7, for free. 2. LibreChat — one interface pulling in ChatGPT, Claude, Gemini, DeepSeek and 20+ models, self-hostable with native MCP. Your data, your infrastructure — why keep paying monthly? 3. HyperFrames — HeyGen open-sourced its video engine. Write some HTML and get production-grade MP4 out; native GSAP/Lottie/Three.js, same input always the same output. 4. Fincept Terminal — a Bloomberg-terminal alternative on your laptop. AI investment agents inspired by legendary investors, deep financial-report analysis, market intel, dozens of data sources — none of the enterprise price tag. 5. MoneyPrinterTurbo — drop in a keyword and get script, visuals, subtitles, music and a finished clip in one go. Landscape or portrait, barely any editing. 6. Agentic Inbox — Cloudflare&#x27;s open-source AI email client. AI reads your inbox and drafts replies, data staying on your turf. No external servers, no subscription. 7. VoxCPM — clone a voice from a few seconds of audio, high-quality output in dozens of languages, or craft a custom voice from a text description. 8. Flowsint — enter a domain and get the linked IPs, subdomains, emails, crypto wallets and social accounts mapped into a graph. Runs fully local — a gem for private investigations and OSINT. 9. agent-skills — Google engineer Addy Osmani released his production-tested Claude Code skills library: API design, debugging, code review, CI/CD, frontend engineering all covered. 10. Nango — the integration layer companies spend thousands a year on. Hundreds of pre-built APIs, managed OAuth, AI-generated integration code, used by plenty of fast-moving startups and enterprise teams.  These aren&#x27;t toy projects — each can replace software you still pay for monthly. Pick one, install it, drop it into your workflow. 100% free, 100% open source. [translated from Chinese]</div></details><div class="mytake"><b class="vb" style="--vc:var(--ok)">real</b><b class="vb" style="--vc:var(--dim)">low fit</b><span class="take-t">Legit free tools, but a technical rabbit hole — save for later.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Audience-building (Chinese creator); the repos themselves are genuinely free.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">real</b>The repos are real (HyperFrames, MoneyPrinterTurbo, VoxCPM — live on GitHub). Legit open-source.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--dim)">low fit</b>Self-host / DIY route — powerful but overkill for a first test. Bookmark for the technical phase.</span></div></div></details>
+        </div></div>
+    </section>
+
+<h2 class="sec">💡 Adjacent / inspiration <span class="hint">— expand any card for the full post</span></h2>
+<div class="bks"><div class="bk"><div class="bk-h"><a href="https://x.com/mrbrandowner/status/2066415804938113036" target="_blank" rel="noopener">@mrbrandowner</a><span class="meta">Mon Jun 15 07:01 · 58k views</span></div><div class="inspo-note">Supplement brand at $3M/mo — &#x27;the creative engine behind every winning ad&#x27; as the scaling lever</div><div class="bk-t">We scaled our supplement brand to $3M/month with MRR  $35M+ run rate this year 30k+ subscribers 77.7% margins  I put our entire strategy into one doc + a 30 min video  I …</div><details class="bk-full"><summary>Read full post</summary><div>We scaled our supplement brand to $3M/month with MRR  $35M+ run rate this year 30k+ subscribers 77.7% margins  I put our entire strategy into one doc + a 30 min video  I covered:  - the MRR model that pays you even when your ads are off - outscaling your competitors - the creative engine behind every winning ad - how to actually scale past $1M/month - the payment processors nobody&#x27;s using yet &amp; more  Like + RT + Comment &quot;PLAYBOOK&quot; and I&#x27;ll send it straight to you</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--new)">some fit</b><span class="take-t">Ignore the funnel; the &#x27;creative engine&#x27; point is the real lesson.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Sells a &#x27;PLAYBOOK&#x27; (comment → DM) — lead-gen for his following; he does run a real supplement brand.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>$3M/mo supplement brand is plausible; the &#x27;creative engine behind every winning ad&#x27; insight is real and central. Exact numbers unverifiable.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--new)">some fit</b>The core lesson — a creative engine as the scaling lever — is exactly what this whole map is about.</span></div></div></details></div><div class="bk"><div class="bk-h"><a href="https://x.com/NoahEpstein_/status/1996584425468125459" target="_blank" rel="noopener">@NoahEpstein_</a><span class="meta">Thu Dec 04 14:16 · 91k views</span></div><div class="inspo-note">&#x27;Employee amplification&#x27; instead of &#x27;automation&#x27; — a positioning reframe for offers (close rate 15%→60%)</div><div class="bk-t">i stopped selling AI automation  here&#x27;s what i sell instead  used to walk into meetings and say:  &quot;we&#x27;ll automate your workflows&quot; &quot;AI will handle the repetitive stuff&quot; &quot;y…</div><details class="bk-full"><summary>Read full post</summary><div>i stopped selling AI automation  here&#x27;s what i sell instead  used to walk into meetings and say:  &quot;we&#x27;ll automate your workflows&quot; &quot;AI will handle the repetitive stuff&quot; &quot;you&#x27;ll save 20 hours a week&quot;  close rate? maybe 15%  businesses heard &quot;automation&quot; and pictured: → robots replacing their team → systems they don&#x27;t understand → becoming dependent on tech that breaks  fear kills deals  so i changed the pitch completely  now i sell &quot;employee amplification&quot;  same exact service completely different frame  here&#x27;s how it works:  old pitch: &quot;we&#x27;ll automate your invoice processing&quot;  new pitch: &quot;tinky winky spends 6 hours a day matching invoices. what if tinky winky did that in 11 minutes and spent the rest of the day on supplier negotiations—the thing you actually hired him for?&quot;  old pitch: &quot;AI will handle your customer emails&quot;  new pitch: &quot;po answers 200 emails a day. 180 of them are the same 12 questions. what if po only handled the 20 that actually needed a human brain, and spent the rest of the time closing deals?&quot;  the client doesn&#x27;t want fewer employees they want better employees  they hired tinky winky because tinky winky is brilliant at negotiation but tinky winky is drowning in data entry  they hired po because po closes deals but po is buried in inbox management  automation isn&#x27;t about replacing tinky winky and po it&#x27;s about unleashing them  when you pitch replacement, you trigger fear when you pitch amplification, you trigger excitement  &quot;your team is about to become superhuman&quot; &quot;same headcount, 3x the output&quot; &quot;tinky winky finally does what you hired tinky winky for&quot;  close rate went from 15% to over 60%  same service same price same delivery  different story  stop selling automation start selling what automation enables  comment &quot;AMPLIFY&quot; and i&#x27;ll send you the exact pitch framework + the discovery questions that uncover who tinky winky and po are in every business</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--new)">some fit</b><span class="take-t">Not UGC, but a sharp positioning reframe worth borrowing.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Sells a pitch framework (comment AMPLIFY → DM) — he sells AI-automation services.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>The reframe (amplification vs replacement) is a real, sharp positioning insight; the exact &#x27;15%→60%&#x27; is unverifiable.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--new)">some fit</b>Not UGC, but the positioning lesson — sell the outcome, not the automation — is worth stealing.</span></div></div></details></div><div class="bk"><div class="bk-h"><a href="https://x.com/X_FINALBOSS/status/2063317534430920876" target="_blank" rel="noopener">@X_FINALBOSS</a><span class="meta">Sat Jun 06 17:50 · 42k views</span></div><div class="inspo-note">Faceless digital-products flow (Claude + Perplexity + Nano Banana) — an adjacent AI-content business</div><div class="bk-t">Woke up 11 AM   $7000+ made while I slept selling ebooks  Each sale was $300 and the ebooks were generated by Claude AI + Perplexity + Nano Banana  here&#x27;s how I did it in…</div><details class="bk-full"><summary>Read full post</summary><div>Woke up 11 AM   $7000+ made while I slept selling ebooks  Each sale was $300 and the ebooks were generated by Claude AI + Perplexity + Nano Banana  here&#x27;s how I did it in 17 steps :   1. I created a new X account , posted anywhere between 1-5 posts per day ( AI generated )  2. posts include : 1. engagement farming 2. case studies 3. stories 4. educational 5. threads 6. Graphs (cycle) 3. connected with https://t.co/CnPwhOoLpd SaaS to X to allow auto DM  4. basically whenever someone comments or likes on any of the posts , it sends a checkout link to buy an ebook 5. I made 2 ebooks at 2 different price points  6. one is $300 and the other is a bundle of 3 ebooks at $475 7. they were generated with Claude AI within a few minutes 8. make sure that it looks great and there are many images and diagrams inside 9. you&#x27;re probably thinking that it&#x27;s overpriced but they also get few videos + discord community access + with good marketing , you can sell at any price point 10. I&#x27;m not revealing the account or niche just because I want to scale up to $30K per month first without any competition  11. but any MMO (make money online) niche works very well. choose one you enjoy or have experience with  12. if you don&#x27;t have any experience, do affiliate. find top 5 whop courses and sent traffic to them and get 30% of the cut 13. this entire business costs $38 per month ($30 for tweethunter and $8 for X premium)  14. to get your first viral post , you will need to have very good copy AND get retweet boost from another account with many followers ( you can message me and I can do this for you )  15. I did a launch which is why I had explosive sales within the first hour. basically built up audience and announced launch 5 days before launch.  16. hopefully this account will hit $100K within 30 days from now but I&#x27;ll keep you guys updated 17. for those who cannot afford the $300 or $475 there is a downsell to $40 per month lower ticket. Also you can track IP so if they&#x27;re from 3rd world country, auto redirect to low ticket MRR.   If you want the full details + 2 hour free course video explaining how this business works   comment &quot;X&#x27; and I&#x27;ll send it to you.   **must be following + Retweet</div></details><div class="mytake"><b class="vb" style="--vc:var(--bad)">castle in the air</b><b class="vb" style="--vc:var(--dim)">low fit</b><span class="take-t">Textbook get-rich castle — useful only as a pattern to recognise and avoid.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Sells a course (comment X → DM) plus an affiliate link (TweetHunter). The &#x27;ebook business&#x27; is the bait.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--bad)">castle in the air</b>Classic make-money-online castle: &#x27;$7k while I slept&#x27;, auto-DM bots, IP-based downsell to &#x27;3rd-world&#x27; traffic. The tech is real, the passive-income promise is not.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--dim)">low fit</b>A red flag to recognise, not a model. Included so the pattern is easy to spot next time.</span></div></div></details></div></div>
+
+<footer>
+  Source: curated X bookmarks (read-only). Tool status verified via WebSearch 2026-06-30.<br>
+  Funnel: <b>163</b> scanned → <b>41</b> keyword candidates → <b>15</b> core hits curated + <b>3</b> inspiration.
+  Filtered out: crypto/trading, general LLM prompting, medical, app/sales building — not UGC-video.
+  <div class="legend">
+    <span><span class="dot" style="background:var(--ok)"></span>live / verified</span>
+    <span><span class="dot" style="background:var(--new)"></span>new (just launched)</span>
+    <span><span class="dot" style="background:var(--warn)"></span>unclear</span>
+    <span><span class="dot" style="background:var(--bad)"></span>dead</span>
+  </div>
+</footer>
+</main></body></html>
