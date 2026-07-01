@@ -190,6 +190,53 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
 .sm-v{font-weight:700;color:var(--ok);white-space:nowrap;font-variant-numeric:tabular-nums;min-width:92px;font-size:13px}
 .sm-t{color:var(--mut);font-size:12.5px;line-height:1.5} .sm-t b{color:var(--fg)}
 .cost-rec{color:var(--ok);font-weight:700;white-space:nowrap}
+
+/* --- surgical UX additions: sticky section nav · anchor offset · responsive table & matrix --- */
+html{scroll-behavior:smooth;scroll-padding-top:54px}
+.tocnav{position:sticky;top:0;z-index:100;display:flex;gap:4px;align-items:center;margin:-28px -22px 22px;padding:0 16px;min-height:44px;overflow-x:auto;background:rgba(14,17,23,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);scrollbar-width:none}
+.tocnav::-webkit-scrollbar{display:none}
+.tocnav a{flex:none;color:var(--mut);text-decoration:none;font-size:12.5px;font-weight:600;padding:7px 10px;border-radius:8px;white-space:nowrap;transition:color .12s ease,background .12s ease}
+.tocnav a:hover{color:var(--fg);background:var(--panel2)}
+.tocnav a:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.table-scroll thead th{top:44px}
+@media(max-width:1024px){.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.table-scroll>table{min-width:920px}}
+@media(max-width:720px){.plot-outer{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:12px}.plot{min-width:580px}}
+:root{--hx:1}
+html[data-acc="sky"]{--acc:#56b6ff}
+html[data-acc="violet"]{--acc:#a98cff}
+html[data-acc="rose"]{--acc:#ff86b3}
+html[data-mood="slate"]{--bg:#12161d;--panel:#1c222d;--panel2:#232a37;--line:#303845;--fg:#e9ecf2;--mut:#a6b0c0;--dim:#767f91}
+html[data-mood="ink"]{--bg:#06080c;--panel:#0f141d;--panel2:#151b26;--line:#222a38;--fg:#eff2f7;--mut:#95a0b2;--dim:#646d7f}
+.stat,.bk,.hook-card,.live-card,.grow{transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.stat:hover,.bk:hover,.hook-card:hover,.live-card:hover,.grow:hover{transform:translateY(calc(-3px * var(--hx)));border-color:color-mix(in srgb,var(--acc) 42%,var(--line));box-shadow:0 calc(9px * var(--hx)) calc(24px * var(--hx)) rgba(0,0,0,.30),0 0 0 1px color-mix(in srgb,var(--acc) 26%,transparent)}
+.chip{transition:color .14s ease,border-color .14s ease,background .14s ease}
+.chip:hover{color:#fff;border-color:color-mix(in srgb,var(--acc) 50%,var(--line));background:color-mix(in srgb,var(--acc) 12%,var(--panel2))}
+tbody tr:hover th.tname{box-shadow:inset 3px 0 0 color-mix(in srgb,var(--acc) 60%,transparent)}
+.pt:hover .d{transform:scale(calc(1 + .4 * var(--hx)));box-shadow:0 0 0 3px #12161f,0 0 calc(20px * var(--hx)) calc(5px * var(--hx)) var(--d)}
+.tw-toggle{position:fixed;right:16px;bottom:16px;z-index:200;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--fg);background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.35);transition:border-color .15s ease,color .15s ease,transform .15s ease}
+.tw-toggle:hover{border-color:color-mix(in srgb,var(--acc) 55%,var(--line));color:#fff;transform:translateY(-1px)}
+.tw-toggle:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.tw-panel{position:fixed;right:16px;bottom:60px;z-index:200;width:248px;background:color-mix(in srgb,var(--panel) 97%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--fg);box-shadow:0 18px 50px rgba(0,0,0,.5);animation:tw-in .16s ease}
+.tw-panel[hidden]{display:none}
+@keyframes tw-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tw-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;letter-spacing:.02em;margin-bottom:12px}
+.tw-x{background:none;border:none;color:var(--mut);cursor:pointer;font-size:13px;line-height:1;padding:2px 5px;border-radius:6px}
+.tw-x:hover{color:var(--fg);background:var(--panel2)}
+.tw-group{margin-bottom:13px}
+.tw-lab{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-bottom:7px}
+.tw-swatches{display:flex;gap:9px}
+.tw-swatches button{width:26px;height:26px;border-radius:50%;background:var(--sw);border:2px solid transparent;cursor:pointer;padding:0;box-shadow:0 0 0 1px rgba(0,0,0,.4);transition:transform .12s ease}
+.tw-swatches button:hover{transform:scale(1.12)}
+.tw-swatches button[aria-pressed="true"]{border-color:#fff}
+.tw-seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.tw-seg button{flex:1;background:transparent;border:none;border-left:1px solid var(--line);color:var(--mut);font-family:inherit;font-size:11.5px;font-weight:600;padding:8px 4px;cursor:pointer;transition:background .12s ease,color .12s ease}
+.tw-seg button:first-child{border-left:none}
+.tw-seg button:hover{color:var(--fg);background:var(--panel2)}
+.tw-seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--acc) 22%,transparent);color:#fff}
+.tw-reset{width:100%;background:none;border:1px solid var(--line);color:var(--mut);font-family:inherit;font-size:11px;font-weight:600;padding:8px;border-radius:8px;cursor:pointer;transition:color .12s ease,border-color .12s ease}
+.tw-reset:hover{color:var(--fg);border-color:var(--mut)}
+@media print{.tw-toggle,.tw-panel,.tocnav{display:none}}
+
 .live-wrap{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px}
 @media(max-width:640px){.live-wrap{grid-template-columns:1fr}}
 .live-card{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--new);border-radius:10px;padding:12px 14px}
@@ -199,10 +246,19 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
 .live-v{color:var(--dim);font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap;flex:none}
 .live-t{color:var(--mut);font-size:12.5px;line-height:1.5} .live-t b{color:var(--fg)}
 </style></head>
-<body><main class="wrap">
+<body><main class="wrap" id="top">
+<nav class="tocnav" aria-label="Sections">
+  <a href="#top">Top</a>
+  <a href="#signal">Signal</a>
+  <a href="#matrix">Matrix</a>
+  <a href="#playbook">Playbook</a>
+  <a href="#tools">Tools</a>
+  <a href="#clusters">Clusters</a>
+  <a href="#inspiration">Inspiration</a>
+</nav>
 <header>
   <h1>🎬 AI UGC-Video Tooling Map</h1>
-  <div class="sub">Curated tooling & tactics for AI-generated UGC / creator video · Updated 01 Jul 2026 14:12 · tool status verified via WebSearch</div>
+  <div class="sub">Curated tooling & tactics for AI-generated UGC / creator video · Updated 01 Jul 2026 15:00 · tool status verified via WebSearch</div>
 </header>
 
 <div class="stat-row">
@@ -247,7 +303,7 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
   </div>
 </details>
 
-<h2 class="sec">🧭 Stack choice: Convenience × Control <span class="hint">— where each path sits, and what it costs you</span></h2>
+<h2 class="sec" id="matrix">🧭 Stack choice: Convenience × Control <span class="hint">— where each path sits, and what it costs you</span></h2>
 <div class="matrix-wrap">
   <div class="plot-outer">
     <div class="axis-y"></div><span class="axis-y-lbl">CONVENIENCE / turnkey</span>
@@ -368,11 +424,12 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
   </div>
 </details>
 
-<h2 class="sec">🎯 Playbook: competitor teardown <span class="hint">— reverse-engineer the ad-spend the category already validated</span></h2>
+<h2 class="sec" id="playbook">🎯 Playbook: competitor teardown <span class="hint">— reverse-engineer the ad-spend the category already validated</span></h2>
 <div class="pb"><div class="pbrow"><span class="pbnum">1</span><div class="pbmain"><div class="pbtitle">Find the competitors&#x27; live ads — free</div><div class="pbshort">Open the Meta Ad Library (public) and pull the video ads currently running for the category leaders — e.g. Loop, Alpine, HearProtek and other earplug / hearing-protection brands. Still running = still spending = still working.</div><details class="pbd"><summary><span class="lbl"></span></summary><div class="pbd-body">Keep it simple — you don&#x27;t need a scraper to start. The Ad Library UI plus a few screen-recordings covers the first pass. Automate the pull (a script or n8n) only once you&#x27;re doing this weekly — not before. A competitor-analysis workflow is likely already in place; this is the same muscle, pointed at ads instead of listings.</div></details></div></div><div class="pbrow"><span class="pbnum">2</span><div class="pbmain"><div class="pbtitle">Tear the hooks apart with AI</div><div class="pbshort">Drop each competitor video into the Claude Code + Gemini teardown skill (~$0.27 per video). It returns the hook (first 3 seconds), the angle, the pain point, on-screen text verbatim, and a beat-by-beat breakdown.</div><details class="pbd"><summary><span class="lbl"></span></summary><div class="pbd-body">Run it across 10–20 ads and the pattern emerges: which angles the category is actually winning with — not what you&#x27;d guess. This is the &#x27;creative intelligence&#x27; step: understanding WHY an ad lands before you spend a cent making your own.</div></details></div></div><div class="pbrow"><span class="pbnum">3</span><div class="pbmain"><div class="pbtitle">Map winning angles to your SKUs</div><div class="pbshort">Each angle maps to a use-case: concerts / festival hearing damage → music earplugs · can&#x27;t sleep / snoring partner → sleep earplugs · open-office noise / focus → work earplugs · kids + noise sensitivity → kids earplugs.</div><details class="pbd"><summary><span class="lbl"></span></summary><div class="pbd-body">Pick the 2–3 angles with the most ad-spend behind them (most ads, longest-running = most validated) and ignore the long tail. That&#x27;s the entire payoff of the teardown: let the category&#x27;s own spend tell you where to aim, instead of testing blindly.</div></details></div></div><div class="pbrow"><span class="pbnum">4</span><div class="pbmain"><div class="pbtitle">Generate fresh variants on your own product</div><div class="pbshort">Feed a product photo plus the winning angle into a platform (MakeUGC / Linah) or your own agentic pipeline → dozens of UGC variants per angle. Test, keep the winners, kill the rest.</div><details class="pbd"><summary><span class="lbl"></span></summary><div class="pbd-body">You&#x27;re not copying their ad — you&#x27;re reverse-engineering the ANGLE their spend already proved, then executing it on your product. Creative intelligence beats raw generation: 5 targeted variants on a validated angle beat 50 blind ones. Made-in-Germany / premium positioning is itself an angle worth testing here.</div></details></div></div></div>
 <div class="why"><b>The lever:</b> you're not guessing what works — you reverse-engineer ad-spend the category has already validated. Creative <i>intelligence</i> (knowing WHY an ad lands) beats raw generation (making more ads blindly). Open the green button on each step for the simple how-to.</div>
 
 <h2 class="sec" id="tools">🛠️ Tool landscape <span class="hint">— 19 verified · click a matrix dot to jump here, or “details” per tool</span></h2>
+<div class="table-scroll">
 <table>
   <thead><tr><th scope="col">Tool</th><th scope="col">Category</th><th scope="col">What it does</th><th scope="col">Pricing 2026</th><th scope="col">Status</th><th scope="col">Fit for us</th></tr></thead>
   <tbody><tr id="t-fastlane-claude-for-content">
@@ -510,6 +567,7 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
       <td class="fit"><b class="vb" style="--vc:var(--dim)">low fit</b><span class="fit-t">Extra style options, optional</span></td>
     </tr></tbody>
 </table>
+</div>
 <details class="pd" style="border-left-color:var(--acc);margin-top:14px">
   <summary><span>🔬 The competitor-teardown skill, in depth — the sharpest single tool for a small team</span> <span class="exp"><span class="lbl"></span></span></summary>
   <div class="pd-body">
@@ -525,7 +583,7 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
   </div>
 </details>
 
-<h2 class="sec">🧩 Use-case clusters <span class="hint">— expand “full post” on any card</span></h2>
+<h2 class="sec" id="clusters">🧩 Use-case clusters <span class="hint">— expand “full post” on any card</span></h2>
 <section class="cluster">
       <div class="cl-head"><span class="cl-num">1</span><h3>All-in-one UGC-ad platforms</h3></div>
       <p class="cl-desc">Photo or prompt in → finished UGC video ad out. Replace the entire creator production pipeline (no filming, no editing, no creator sourcing).</p>
@@ -632,7 +690,7 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
         </div></div>
     </section>
 
-<h2 class="sec">💡 Adjacent / inspiration <span class="hint">— expand any card for the full post</span></h2>
+<h2 class="sec" id="inspiration">💡 Adjacent / inspiration <span class="hint">— expand any card for the full post</span></h2>
 <div class="bks"><div class="bk"><div class="bk-h"><a href="https://x.com/mrbrandowner/status/2066415804938113036" target="_blank" rel="noopener">@mrbrandowner</a><span class="meta">Mon Jun 15 07:01 · 58k views</span></div><div class="inspo-note">Supplement brand at $3M/mo — &#x27;the creative engine behind every winning ad&#x27; as the scaling lever</div><div class="bk-t">We scaled our supplement brand to $3M/month with MRR  $35M+ run rate this year 30k+ subscribers 77.7% margins  I put our entire strategy into one doc + a 30 min video  I …</div><details class="bk-full"><summary>Read full post</summary><div>We scaled our supplement brand to $3M/month with MRR  $35M+ run rate this year 30k+ subscribers 77.7% margins  I put our entire strategy into one doc + a 30 min video  I covered:  - the MRR model that pays you even when your ads are off - outscaling your competitors - the creative engine behind every winning ad - how to actually scale past $1M/month - the payment processors nobody&#x27;s using yet &amp; more  Like + RT + Comment &quot;PLAYBOOK&quot; and I&#x27;ll send it straight to you</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--new)">some fit</b><span class="take-t">Ignore the funnel; the &#x27;creative engine&#x27; point is the real lesson.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Sells a &#x27;PLAYBOOK&#x27; (comment → DM) — lead-gen for his following; he does run a real supplement brand.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>$3M/mo supplement brand is plausible; the &#x27;creative engine behind every winning ad&#x27; insight is real and central. Exact numbers unverifiable.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--new)">some fit</b>The core lesson — a creative engine as the scaling lever — is exactly what this whole map is about.</span></div></div></details></div><div class="bk"><div class="bk-h"><a href="https://x.com/NoahEpstein_/status/1996584425468125459" target="_blank" rel="noopener">@NoahEpstein_</a><span class="meta">Thu Dec 04 14:16 · 91k views</span></div><div class="inspo-note">&#x27;Employee amplification&#x27; instead of &#x27;automation&#x27; — a positioning reframe for offers (close rate 15%→60%)</div><div class="bk-t">i stopped selling AI automation  here&#x27;s what i sell instead  used to walk into meetings and say:  &quot;we&#x27;ll automate your workflows&quot; &quot;AI will handle the repetitive stuff&quot; &quot;y…</div><details class="bk-full"><summary>Read full post</summary><div>i stopped selling AI automation  here&#x27;s what i sell instead  used to walk into meetings and say:  &quot;we&#x27;ll automate your workflows&quot; &quot;AI will handle the repetitive stuff&quot; &quot;you&#x27;ll save 20 hours a week&quot;  close rate? maybe 15%  businesses heard &quot;automation&quot; and pictured: → robots replacing their team → systems they don&#x27;t understand → becoming dependent on tech that breaks  fear kills deals  so i changed the pitch completely  now i sell &quot;employee amplification&quot;  same exact service completely different frame  here&#x27;s how it works:  old pitch: &quot;we&#x27;ll automate your invoice processing&quot;  new pitch: &quot;tinky winky spends 6 hours a day matching invoices. what if tinky winky did that in 11 minutes and spent the rest of the day on supplier negotiations—the thing you actually hired him for?&quot;  old pitch: &quot;AI will handle your customer emails&quot;  new pitch: &quot;po answers 200 emails a day. 180 of them are the same 12 questions. what if po only handled the 20 that actually needed a human brain, and spent the rest of the time closing deals?&quot;  the client doesn&#x27;t want fewer employees they want better employees  they hired tinky winky because tinky winky is brilliant at negotiation but tinky winky is drowning in data entry  they hired po because po closes deals but po is buried in inbox management  automation isn&#x27;t about replacing tinky winky and po it&#x27;s about unleashing them  when you pitch replacement, you trigger fear when you pitch amplification, you trigger excitement  &quot;your team is about to become superhuman&quot; &quot;same headcount, 3x the output&quot; &quot;tinky winky finally does what you hired tinky winky for&quot;  close rate went from 15% to over 60%  same service same price same delivery  different story  stop selling automation start selling what automation enables  comment &quot;AMPLIFY&quot; and i&#x27;ll send you the exact pitch framework + the discovery questions that uncover who tinky winky and po are in every business</div></details><div class="mytake"><b class="vb" style="--vc:var(--new)">real, but hyped</b><b class="vb" style="--vc:var(--new)">some fit</b><span class="take-t">Not UGC, but a sharp positioning reframe worth borrowing.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Sells a pitch framework (comment AMPLIFY → DM) — he sells AI-automation services.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--new)">real, but hyped</b>The reframe (amplification vs replacement) is a real, sharp positioning insight; the exact &#x27;15%→60%&#x27; is unverifiable.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--new)">some fit</b>Not UGC, but the positioning lesson — sell the outcome, not the automation — is worth stealing.</span></div></div></details></div><div class="bk"><div class="bk-h"><a href="https://x.com/X_FINALBOSS/status/2063317534430920876" target="_blank" rel="noopener">@X_FINALBOSS</a><span class="meta">Sat Jun 06 17:50 · 42k views</span></div><div class="inspo-note">Faceless digital-products flow (Claude + Perplexity + Nano Banana) — an adjacent AI-content business</div><div class="bk-t">Woke up 11 AM   $7000+ made while I slept selling ebooks  Each sale was $300 and the ebooks were generated by Claude AI + Perplexity + Nano Banana  here&#x27;s how I did it in…</div><details class="bk-full"><summary>Read full post</summary><div>Woke up 11 AM   $7000+ made while I slept selling ebooks  Each sale was $300 and the ebooks were generated by Claude AI + Perplexity + Nano Banana  here&#x27;s how I did it in 17 steps :   1. I created a new X account , posted anywhere between 1-5 posts per day ( AI generated )  2. posts include : 1. engagement farming 2. case studies 3. stories 4. educational 5. threads 6. Graphs (cycle) 3. connected with https://t.co/CnPwhOoLpd SaaS to X to allow auto DM  4. basically whenever someone comments or likes on any of the posts , it sends a checkout link to buy an ebook 5. I made 2 ebooks at 2 different price points  6. one is $300 and the other is a bundle of 3 ebooks at $475 7. they were generated with Claude AI within a few minutes 8. make sure that it looks great and there are many images and diagrams inside 9. you&#x27;re probably thinking that it&#x27;s overpriced but they also get few videos + discord community access + with good marketing , you can sell at any price point 10. I&#x27;m not revealing the account or niche just because I want to scale up to $30K per month first without any competition  11. but any MMO (make money online) niche works very well. choose one you enjoy or have experience with  12. if you don&#x27;t have any experience, do affiliate. find top 5 whop courses and sent traffic to them and get 30% of the cut 13. this entire business costs $38 per month ($30 for tweethunter and $8 for X premium)  14. to get your first viral post , you will need to have very good copy AND get retweet boost from another account with many followers ( you can message me and I can do this for you )  15. I did a launch which is why I had explosive sales within the first hour. basically built up audience and announced launch 5 days before launch.  16. hopefully this account will hit $100K within 30 days from now but I&#x27;ll keep you guys updated 17. for those who cannot afford the $300 or $475 there is a downsell to $40 per month lower ticket. Also you can track IP so if they&#x27;re from 3rd world country, auto redirect to low ticket MRR.   If you want the full details + 2 hour free course video explaining how this business works   comment &quot;X&#x27; and I&#x27;ll send it to you.   **must be following + Retweet</div></details><div class="mytake"><b class="vb" style="--vc:var(--bad)">castle in the air</b><b class="vb" style="--vc:var(--dim)">low fit</b><span class="take-t">Textbook get-rich castle — useful only as a pattern to recognise and avoid.</span></div><details class="verdict"><summary><span class="lbl"></span></summary><div class="v-body"><div class="v-row"><span class="v-k">Money</span><span class="v-t">Sells a course (comment X → DM) plus an affiliate link (TweetHunter). The &#x27;ebook business&#x27; is the bait.</span></div><div class="v-row"><span class="v-k">Real?</span><span class="v-t"><b class="vb" style="--vc:var(--bad)">castle in the air</b>Classic make-money-online castle: &#x27;$7k while I slept&#x27;, auto-DM bots, IP-based downsell to &#x27;3rd-world&#x27; traffic. The tech is real, the passive-income promise is not.</span></div><div class="v-row"><span class="v-k">For us</span><span class="v-t"><b class="vb" style="--vc:var(--dim)">low fit</b>A red flag to recognise, not a model. Included so the pattern is easy to spot next time.</span></div></div></details></div></div>
 
 <footer>
@@ -646,4 +704,38 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
     <span><span class="dot" style="background:var(--bad)"></span>dead</span>
   </div>
 </footer>
+<button id="tw-toggle" class="tw-toggle" aria-expanded="false" aria-controls="tw-panel" title="Tweak the look">⚙ Tweaks</button>
+<aside id="tw-panel" class="tw-panel" role="dialog" aria-label="Design tweaks" hidden>
+  <div class="tw-head"><span>Tweaks</span><button id="tw-close" class="tw-x" aria-label="Close tweaks">✕</button></div>
+  <div class="tw-group"><div class="tw-lab">Accent</div><div class="tw-swatches" id="tw-acc"><button data-v="peri" style="--sw:#7c9cff" title="Periwinkle"></button><button data-v="sky" style="--sw:#56b6ff" title="Sky"></button><button data-v="violet" style="--sw:#a98cff" title="Violet"></button><button data-v="rose" style="--sw:#ff86b3" title="Rose"></button></div></div>
+  <div class="tw-group"><div class="tw-lab">Surface</div><div class="tw-seg" id="tw-mood"><button data-v="midnight">Midnight</button><button data-v="slate">Slate</button><button data-v="ink">Ink</button></div></div>
+  <div class="tw-group"><div class="tw-lab">Hover energy</div><div class="tw-seg" id="tw-hover"><button data-v="calm">Calm</button><button data-v="balanced">Balanced</button><button data-v="lively">Lively</button></div></div>
+  <button id="tw-reset" class="tw-reset">Reset to default</button>
+</aside>
+<script>
+(function(){
+  var root=document.documentElement,KEY='ugcmap.tweaks.v1';
+  var HX={calm:.35,balanced:1,lively:1.8};
+  var DEF={acc:'peri',mood:'midnight',hover:'balanced'};
+  var st=Object.assign({},DEF);
+  try{var saved=JSON.parse(localStorage.getItem(KEY));if(saved&&typeof saved==='object')st=Object.assign(st,saved);}catch(e){}
+  function press(sel,val){var els=document.querySelectorAll(sel+' button');for(var i=0;i<els.length;i++){els[i].setAttribute('aria-pressed',els[i].getAttribute('data-v')===val?'true':'false');}}
+  function apply(){
+    root.setAttribute('data-acc',st.acc);
+    root.setAttribute('data-mood',st.mood);
+    root.style.setProperty('--hx',HX[st.hover]!=null?HX[st.hover]:1);
+    press('#tw-acc',st.acc);press('#tw-mood',st.mood);press('#tw-hover',st.hover);
+  }
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+  apply();
+  var panel=document.getElementById('tw-panel'),toggle=document.getElementById('tw-toggle');
+  function setOpen(o){panel.hidden=!o;toggle.setAttribute('aria-expanded',o?'true':'false');}
+  toggle.addEventListener('click',function(){setOpen(panel.hidden);});
+  document.getElementById('tw-close').addEventListener('click',function(){setOpen(false);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!panel.hidden)setOpen(false);});
+  function bind(id,key){document.getElementById(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!b.dataset.v)return;st[key]=b.dataset.v;apply();save();});}
+  bind('tw-acc','acc');bind('tw-mood','mood');bind('tw-hover','hover');
+  document.getElementById('tw-reset').addEventListener('click',function(){st=Object.assign({},DEF);apply();save();});
+})();
+</script>
 </main></body></html>
