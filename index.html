@@ -190,11 +190,19 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
 .sm-v{font-weight:700;color:var(--ok);white-space:nowrap;font-variant-numeric:tabular-nums;min-width:92px;font-size:13px}
 .sm-t{color:var(--mut);font-size:12.5px;line-height:1.5} .sm-t b{color:var(--fg)}
 .cost-rec{color:var(--ok);font-weight:700;white-space:nowrap}
+.live-wrap{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px}
+@media(max-width:640px){.live-wrap{grid-template-columns:1fr}}
+.live-card{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--new);border-radius:10px;padding:12px 14px}
+.live-h{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:5px}
+.live-h a{color:var(--fg);font-weight:700;font-size:13.5px;text-decoration:none;line-height:1.3}
+.live-h a:hover{color:var(--acc);text-decoration:underline}
+.live-v{color:var(--dim);font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap;flex:none}
+.live-t{color:var(--mut);font-size:12.5px;line-height:1.5} .live-t b{color:var(--fg)}
 </style></head>
 <body><main class="wrap">
 <header>
   <h1>🎬 AI UGC-Video Tooling Map</h1>
-  <div class="sub">Curated tooling & tactics for AI-generated UGC / creator video · Updated 01 Jul 2026 14:01 · tool status verified via WebSearch</div>
+  <div class="sub">Curated tooling & tactics for AI-generated UGC / creator video · Updated 01 Jul 2026 14:12 · tool status verified via WebSearch</div>
 </header>
 
 <div class="stat-row">
@@ -224,6 +232,8 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
 <h3 class="sig-h">The 4 hooks that measurably pull in 2026 <span class="sig-src"><a class="src" href="https://www.hookmafia.io/blog/i-tested-30-viral-tiktok-hooks-here-s-what-actually-works-in-2026" target="_blank" rel="noopener">30-hook test 2026 ↗</a></span></h3>
 <div class="sig-note">Of 30 viral hook patterns tested in 2026, only four scored above 70. The opening 3 seconds decide everything — <b>65 % of people who watch 3 seconds watch 10+</b> <a class="src" href="https://www.hangryfeed.com/insights/posts/high-retention-hooks-formula" target="_blank" rel="noopener">3-sec retention data ↗</a>. The cardinal sin is the slow build (“Hey guys, welcome back…”).</div>
 <div class="hooks"><div class="hook-card"><div class="hk-name">Identity Call</div><div class="hk-what">“If you are the kind of person who…”</div><div class="hk-why">Names the viewer directly — they self-select in and feel seen before you have pitched anything.</div></div><div class="hook-card"><div class="hk-name">Contrarian Strike</div><div class="hk-what">“Everything you were told about X is wrong.”</div><div class="hk-why">Breaks the expected pattern and opens a curiosity gap the brain wants closed.</div></div><div class="hook-card"><div class="hk-name">Open Loop</div><div class="hk-what">Starts a story or question it does not resolve.</div><div class="hk-why">The unfinished loop is cognitively itchy — viewers stay to get the payoff.</div></div><div class="hook-card"><div class="hk-name">Confession</div><div class="hk-what">“I was not going to admit this, but…”</div><div class="hk-why">Vulnerability reads as authenticity and disarms the default ad-skepticism.</div></div></div>
+<h3 class="sig-h">Two live signals right now <span class="sig-src" style="font-weight:400;font-size:12px;color:var(--dim)">— late June 2026, real engagement</span></h3>
+<div class="live-wrap"><div class="live-card"><div class="live-h"><a href="https://x.com/JoeJMarston/status/2071585769722962162" target="_blank" rel="noopener">A leading earplug brand’s full funnel is a public playbook</a><span class="live-v">76.9K views</span></div><div class="live-t">A growth marketer packaged the <b>full DTC funnel</b> — paid strategy, organic, landing pages, Google ads, email, offers — of 11 top brands (Loop Earplugs, Alo Yoga, Glossier, Rhode…). The signal: a category’s <b>whole funnel</b> is studyable, not just its ads.</div></div><div class="live-card"><div class="live-h"><a href="https://x.com/FynCas/status/2071594629607145615" target="_blank" rel="noopener">One product photo → agency-level ad for ~$1</a><span class="live-v">37.5K views</span></div><div class="live-t">A creator fed a single product photo to <b>Seedance</b> + a Claude pipeline and got top-1%-DTC-looking ads in under 2 minutes, for about a dollar — no editor, no retainer. Confirms the cost collapse: the bottleneck is the hook, not production.</div></div></div>
 <details class="pd" style="border-left-color:var(--ok)">
   <summary><span>🔢 How to back it with numbers — the proof metrics</span> <span class="exp"><span class="lbl"></span></span></summary>
   <div class="pd-body"><div class="dd-lead">“Psychologically good” has to be measurable, or it is a hunch. Four signals separate a real winner from “it kind of runs”:</div><div class="sig-metric"><span class="sm-v">65–70 %+</span><span class="sm-t"><b>3-second retention</b> is the north-star. Below 65 %, the hook is too weak to distribute — the platforms weight early retention exponentially.</span></div><div class="sig-metric"><span class="sm-v">A–D grade</span><span class="sm-t"><b>Hook-rate</b>, scored directly by Motion — an objective read on whether the opening lands.</span></div><div class="sig-metric"><span class="sm-v">run-duration</span><span class="sm-t"><b>Ad longevity</b> in the TikTok Top-Ads dashboard / Meta Ad Library — a long-running ad is still profitable, a proxy for a winning hook.</span></div><div class="sig-metric"><span class="sm-v">per hour</span><span class="sm-t"><b>Velocity, not absolute</b> — engagement per hour beats total likes; it catches what is accelerating <i>now</i> instead of what already peaked.</span></div></div>
@@ -254,7 +264,7 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
     </a><a class="pt rgt" href="#t-makeugc" style="left:46%;bottom:78%" title="Platform quick-start, 6 models under one login, 500+ creators. — click for the table entry">
       <span class="d" style="--d:var(--new)"></span>
       <span class="pl"><b>MakeUGC</b><span class="pp" style="color:var(--new)">$49–119/mo</span></span>
-    </a><a class="pt lft" href="#t-linah-ai" style="left:35%;bottom:71%" title="Avatar-UGC + photo→video + FB-Ads integration. — click for the table entry">
+    </a><a class="pt lft" href="#t-linah-ai" style="left:34%;bottom:75%" title="Zero-setup first test — photo→video ad, FB-Ads integration. — click for the table entry">
       <span class="d" style="--d:var(--new)"></span>
       <span class="pl"><b>Linah AI</b><span class="pp" style="color:var(--new)">paid (VIRAL30)</span></span>
     </a><a class="pt rgt" href="#t-heygen" style="left:56%;bottom:77%" title="Avatar / talking-head platform — fast testimonial-style UGC. — click for the table entry">
@@ -290,7 +300,7 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
     <span><span class="dot" style="background:var(--bad)"></span>expensive per run</span>
   </div>
   <div class="guide-box"><div class="grow" style="--g:var(--ok)">
-      <div class="gq">Just testing whether AI-UGC works at all?</div><div class="ga"><b>Platform</b> (MakeUGC / Linah). 1 day, ~$49, zero setup. An MVP test — cancel with no sunk cost.</div></div><div class="grow" style="--g:var(--acc)">
+      <div class="gq">Just testing whether AI-UGC works at all?</div><div class="ga"><b>Linah first</b> — zero setup, fastest to a real result. Check the output; escalate to more control (MakeUGC, then a pipeline) only if quality or control falls short. An MVP test — cancel with no sunk cost.</div></div><div class="grow" style="--g:var(--acc)">
       <div class="gq">Volume + distribution on autopilot, minimal time?</div><div class="ga"><b>Agentic E2E</b> (Fastlane). Turnkey — AI handles creation <i>and</i> publishing. Highest convenience premium.</div></div><div class="grow" style="--g:var(--acc)">
       <div class="gq">Full brand control + own logic, mid-term?</div><div class="ga"><b>n8n pipeline</b> (visual nodes) or <b>Claude Code / Codex + APIs</b> (describe the pipeline in language — your tool). Setup once, every step controllable, cheap to run.</div></div><div class="grow" style="--g:var(--new)">
       <div class="gq">Max control + data sovereignty, technically deep?</div><div class="ga"><b>ComfyUI + MCP (local GPU)</b>. Powerful, but overkill for a first test.</div></div></div>
@@ -308,7 +318,7 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
       <div><span class="wname">MakeUGC</span> <span class="wcoord">control 46% · convenience 78%</span><div class="wtext">High convenience, medium control. You pick from 6 video engines, 500+ AI creators, script and avatar — far more levers than Fastlane, but still a managed black box you can&#x27;t open. The $49–119/mo subscription buys the whole pipeline under one login. The natural place to start a test.</div></div>
     </div><div class="wrow">
       <span class="wdot" style="background:var(--new)"></span>
-      <div><span class="wname">Linah AI</span> <span class="wcoord">control 35% · convenience 71%</span><div class="wtext">Sits almost on top of MakeUGC — slightly less control (fewer model choices), tuned specifically for avatar-UGC and Facebook-Ads output. One photo in, finished video ad out. Same convenience-vs-control trade as any managed platform.</div></div>
+      <div><span class="wname">Linah AI</span> <span class="wcoord">control 34% · convenience 75%</span><div class="wtext">The fastest zero-setup entry: one product photo in, a finished video ad out, tuned specifically for avatar-UGC and Facebook-Ads output. Practitioner feedback rates it a strong first move — start here, judge it on 5 good ads, and escalate to more control (MakeUGC, then a pipeline) only if quality or control falls short. High on convenience; slightly less model choice than MakeUGC is the trade.</div></div>
     </div><div class="wrow">
       <span class="wdot" style="background:var(--new)"></span>
       <div><span class="wname">HeyGen</span> <span class="wcoord">control 56% · convenience 77%</span><div class="wtext">A high-convenience avatar / talking-head platform. For a physical-product brand it&#x27;s the fast route to testimonial-style UGC (&#x27;I tested these&#x27;) without booking a real reviewer. Slightly more control than pure UGC platforms because you direct the avatar and script — still a managed box. Its engine is open-sourced as HyperFrames if you ever want the self-host version.</div></div>
@@ -347,13 +357,14 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
   </div>
 </details>
 <details class="pd" style="border-left-color:var(--acc)">
-  <summary><span>🎯 Why MakeUGC first — and what HeyGen &amp; the teardown tool are really for</span> <span class="exp"><span class="lbl"></span></span></summary>
+  <summary><span>🎯 Which platform to start with — Linah first, then MakeUGC</span> <span class="exp"><span class="lbl"></span></span></summary>
   <div class="pd-body">
-    <div class="dd-lead">Three dots cluster near the top — MakeUGC, HeyGen and the teardown tool. They look like alternatives, but only two are platforms and only one is the right first move. Here's the honest split.</div>
-    <div class="v-row"><span class="v-k">MakeUGC</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">start here</b>The broadest platform: 6 video engines, 500+ AI creators, 50+ languages under one ~$49 login. It covers every angle you'd want to test — product-in-hand, lifestyle, testimonial — in one place. The lowest-risk single test of whether AI-UGC moves the needle for a physical product.</span></div>
-    <div class="v-row"><span class="v-k">HeyGen</span><span class="v-t"><b class="vb" style="--vc:var(--new)">narrower, later</b>An avatar / talking-head specialist. Cheaper (~$24) and excellent at one format — a 'person' reviewing your product to camera. But that's the one trick; it won't do product-in-hand or lifestyle b-roll. Reach for it once testimonial-style ads have proven out, not as your first test.</span></div>
-    <div class="v-row"><span class="v-k">Teardown</span><span class="v-t"><b class="vb" style="--vc:var(--acc)">not a rival</b>The analysis tool, not a generator (see the deep-dive above). It doesn't compete with MakeUGC — it feeds it. Run both: the teardown tells you the angle, MakeUGC produces it.</span></div>
-    <div class="v-row"><span class="v-k">Bottom line</span><span class="v-t">MakeUGC first because it's the widest, cheapest single test. HeyGen when you specifically want the testimonial format. The teardown tool alongside either — always — because it's the intelligence, not the factory.</span></div>
+    <div class="dd-lead">Several managed platforms cluster near the top of the matrix. They look interchangeable, but there is a clear order for a first test: start with the fastest zero-setup option, judge it on a handful of good ads, and escalate only if it falls short.</div>
+    <div class="v-row"><span class="v-k">Linah</span><span class="v-t"><b class="vb" style="--vc:var(--ok)">start here</b>The fastest zero-setup test: one product photo in, a finished video ad out, with built-in Facebook-Ads output. Practitioner feedback rates it the strongest first move. Run it, judge the result on 5 good ads — then escalate only if quality or control isn't enough.</span></div>
+    <div class="v-row"><span class="v-k">MakeUGC</span><span class="v-t"><b class="vb" style="--vc:var(--new)">broadest, next</b>The widest platform — 6 video engines, 500+ AI creators, 50+ languages under one ~$49 login. The natural next step if Linah's output or control isn't enough: more models and angles to test in one place.</span></div>
+    <div class="v-row"><span class="v-k">HeyGen</span><span class="v-t"><b class="vb" style="--vc:var(--new)">narrower, later</b>An avatar / talking-head specialist (~$24). Excellent at one format — a 'person' reviewing your product to camera — but only that. Reach for it once testimonial-style ads have proven out, not as your first test.</span></div>
+    <div class="v-row"><span class="v-k">Teardown</span><span class="v-t"><b class="vb" style="--vc:var(--acc)">not a rival</b>The analysis tool, not a generator (see the deep-dive above). It doesn't compete with the platforms — it feeds them: the teardown tells you the angle, the platform produces it.</span></div>
+    <div class="v-row"><span class="v-k">Bottom line</span><span class="v-t">Linah first because it's the fastest zero-setup path to a real result. MakeUGC when you need breadth or more control. HeyGen for the testimonial format. The teardown tool alongside any of them — always — because it's the intelligence, not the factory.</span></div>
   </div>
 </details>
 
@@ -447,7 +458,7 @@ footer{margin-top:34px;color:var(--dim);font-size:12px;border-top:1px solid var(
       <td class="was">Photo → 150+ avatars, voice-clone, FB-Ads integration<details class="tdetail"><summary>Show details</summary><span>Upload a photo → scripts, 150+ lifelike avatars, voice-cloning in 20+ languages, edits, ready-to-run videos. FB-Ads integration claims 500 ad variations per minute from 1–3 product images.</span></details></td>
       <td class="price">paid plans (code VIRAL30 −30%)</td>
       <td><span class="badge" style="--b:var(--ok)">live</span></td>
-      <td class="fit"><b class="vb" style="--vc:var(--new)">some fit</b><span class="fit-t">Ad-focused MakeUGC alternative</span></td>
+      <td class="fit"><b class="vb" style="--vc:var(--ok)">high fit</b><span class="fit-t">Fastest zero-setup first test — start here</span></td>
     </tr><tr id="t-makeugc">
       <th scope="row" class="tname">MakeUGC</th>
       <td><span class="cat" style="--c:#2ecc9b">UGC platform</span></td>
